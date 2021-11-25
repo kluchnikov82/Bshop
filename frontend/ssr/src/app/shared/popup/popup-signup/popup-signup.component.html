@@ -1,0 +1,20 @@
+<mat-icon (click)="closePopup()" svgIcon="close" class="close-icon"></mat-icon>
+<div class="popup">
+  <h2>Регистрация в личном кабинете</h2>
+  <form class="login-form">
+    <input type="text" matInput placeholder="ФИО" [(ngModel)]="username" name="username" [ngClass]="{'error': errors.name}" fioMask >
+    <input type="email" matInput placeholder="E-mail" [(ngModel)]="email" name="email" [ngClass]="{'error': errors.email}" >
+    <input type="phone" matInput placeholder="Телефон" [(ngModel)]="phone" name="phone" phoneMask [ngClass]="{'error': errors.phone}" (focus)="checkPhone()" >
+    <input type="password" matInput placeholder="Пароль" [(ngModel)]="password" name="password" [ngClass]="{'error': errors.password1}" >
+    <input type="password" matInput placeholder="Повторите пароль" [(ngModel)]="password2" name="password2" >
+
+  </form>
+  <div class="btn btn__login" (click)="signUp()" [ngClass]="{'disable': !agree}">
+    Регистрация <mat-icon svgIcon="shape"></mat-icon>
+  </div>
+  <div class="error" *ngIf="showError">{{errorText}}</div>
+  <div class="agree">
+    <div class="check" (click)="agree = !agree" [ngClass]="(agree)? 'active' : ''"></div>
+    <div class="text" (click)="openDoc()">Согласен с условиями Публичной оферты</div>
+  </div>
+</div>

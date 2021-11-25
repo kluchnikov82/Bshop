@@ -1,0 +1,35 @@
+<breadcrumbs [list]="bClist"></breadcrumbs>
+<div class="category">
+  <h3>Результаты поиска</h3>
+</div>
+
+<div class="catalog__content" *ngIf="products.length">
+  <div class="product" *ngFor="let productItem of products">
+    <div class="product__inner" (click)="showProduct(productItem)">
+      <div class="badge" *ngIf="productItem.hit">ХИТ</div>
+      <div class="badge badge__new" *ngIf="productItem.new">NEW</div>
+      <!-- <div class="badge badge__discount" *ngIf="productItem.discount">%</div> -->
+      <div class="overlay">
+          <div class="product__inner">
+            <a routerLink="/catalog/{{productItem.category.slug}}/{{productItem.subcat.slug}}/{{productItem.slug}}">
+              <img data-src="{{getProductImage(productItem)}}" class="lazyload">
+            </a>            
+            <div class="product__caption">{{productItem.name}}</div>
+            <div class="product__subcaption">{{productItem.english_name}}</div>
+            <div class="product__price">{{productItem.price}} &#8381;</div>               
+            <div class="btn btn-add" (click)="addToCart(productItem, $event)" style="font-size: 10px;">В корзину</div>
+            <!-- <div class="product__animate" [@animateCart]="productItem.state"></div> -->
+          </div>
+      </div>
+      <a routerLink="/catalog/{{productItem.category.slug}}/{{productItem.subcat.slug}}/{{productItem.slug}}">
+        <img data-src="{{getProductImage(productItem)}}" class="lazyload">
+      </a>      
+      <div class="product__caption">{{productItem.name}}</div>
+      <div class="product__subcaption">{{productItem.english_name}}</div>
+      <div class="product__price">{{productItem.price}} &#8381;</div>
+    </div>
+  </div>
+</div>
+<div class="catalog__content" *ngIf="!products || !products.length">
+  Поиск не дал результатов
+</div>

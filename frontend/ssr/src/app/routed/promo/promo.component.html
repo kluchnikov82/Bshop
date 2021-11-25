@@ -1,0 +1,13 @@
+<div class="promo" *ngIf="events">
+  <breadcrumbs [list]="[{text: 'Главная', link: '/'}, {text: 'Акции', link: null}]"></breadcrumbs>
+  <div class="category category__promo">
+    <h3>Акции</h3>
+  </div>
+  <div class="promo__content">
+    <div class="promo__list">
+      <promo-event *ngFor="let ev of events" [promoEvent]="ev" class="promo__item width-{{getPromoWidth(ev)}}" 
+      [ngClass]="{'promo__item-2': !ev.half_screen, 
+                  'promo__item-1': ev.half_screen}"></promo-event>
+    </div>
+  </div>
+</div>

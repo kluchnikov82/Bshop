@@ -1,0 +1,32 @@
+$maxWidth: calc(100vw - 206px);
+$rose: #ff8a8a;
+
+mat-accordion {
+    width: 100%;
+}
+
+.mat-expansion-panel:not([class*=mat-elevation-z]) {
+    box-shadow: none !important;
+}
+
+.mat-expansion-panel-header {
+    font-family: 'Montserrat Bold';
+    padding-left: 29px;
+}
+
+.mat-expansion-panel {
+    background-color: #f6f6f6;
+
+    &.cat-caption {
+        padding: 5px 0;
+        border-bottom: 1px solid #ececec;
+    }
+}
+
+.mat-expansion-panel-body {
+    padding: 0 !important;
+}
+
+.mat-expansion-panel:not(.mat-expanded):not([aria-disabled=true]) .mat-expansion-panel-header:hover {
+    background-color: #f6f6f6;
+}

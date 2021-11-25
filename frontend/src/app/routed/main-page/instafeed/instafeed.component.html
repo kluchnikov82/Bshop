@@ -1,0 +1,8 @@
+<div class="instafeed" *ngIf="instaPosts">
+    <div class="instafeed__item" *ngFor="let post of instaPosts">
+        <div class="instafeed__thumb" (click)="openPost(post)">
+            <mat-icon svgIcon="instagram"></mat-icon>
+            <img [src]="post.node.thumbnail_src">
+        </div>
+    </div>
+</div>

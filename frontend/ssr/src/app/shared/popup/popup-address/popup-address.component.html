@@ -1,0 +1,89 @@
+<div class="confirm-order">
+  <div class="confirm-order__inner">
+    <div class="row popup">
+      <form [formGroup]="deliveryForm">
+        <h3>Добавить адрес</h3>
+        <div class="form-item form-item__first">
+          <div class="label">Регион/район*</div>
+          <div class="input">
+            <input type="text" required
+                  formControlName="regionControl" 
+                  [matAutocomplete]="regionAC" 
+                  aria-label="Region" 
+                  placeholder="Регион/район*">
+            <mat-autocomplete 
+              #regionAC="matAutocomplete" 
+              autoActiveFirstOption 
+              (optionSelected)="selectRegion($event)" 
+              [displayWith]="displayRegion">
+              <mat-option *ngFor="let option of regionOptions" [value]="option">{{option.value}}</mat-option>
+            </mat-autocomplete>                  
+          </div>          
+        </div>
+
+        <div class="form-item form-item-20">
+          <div class="label">Город/нас.пункт*</div>
+          <div class="input">
+            <input type="text" required
+                  formControlName="cityControl" 
+                  [matAutocomplete]="cityAC" 
+                  aria-label="City" 
+                  placeholder="Город/нас.пункт*">
+            <mat-autocomplete 
+              #cityAC="matAutocomplete" 
+              autoActiveFirstOption 
+              (optionSelected)="selectCity($event)" 
+              [displayWith]="displayCity">
+              <mat-option *ngFor="let option of cityOptions" [value]="option">{{displayCity(option)}}</mat-option>
+            </mat-autocomplete>                
+          </div>          
+        </div>
+
+        <div class="form-item form-item-20">
+          <div class="label">Улица</div>
+          <div class="input">
+            <input type="text"
+                  formControlName="streetControl" 
+                  [matAutocomplete]="streetAC" 
+                  aria-label="Street" 
+                  placeholder="Улица">
+            <mat-autocomplete 
+              #streetAC="matAutocomplete" 
+              autoActiveFirstOption
+              (optionSelected)="selectStreet($event)"
+              [displayWith]="displayStreet">
+              <mat-option *ngFor="let option of streetOptions" [value]="option">{{displayStreet(option)}}</mat-option>
+            </mat-autocomplete>                
+          </div>          
+        </div>
+
+        <div class="form-item form-item-20">
+          <div class="label">Дом</div>
+            <div class="input-group input-group__flat">
+              <div class="input input-house">
+                <input type="text" 
+                      formControlName="houseControl" 
+                      [matAutocomplete]="houseAC" 
+                      aria-label="House" 
+                      placeholder="Дом">
+                <mat-autocomplete 
+                  #houseAC="matAutocomplete" 
+                  autoActiveFirstOption
+                  (optionSelected)="selectHouse($event)"
+                  [displayWith]="displayHouse">
+                  <mat-option *ngFor="let option of houseOptions" [value]="option">{{displayHouse(option)}}</mat-option>
+                </mat-autocomplete>                    
+              </div>
+              <div class="label label-flat">Кв</div>
+              <div class="input input-flat">
+                <input type="text" 
+                      formControlName="flatControl" 
+                      placeholder="Кв">
+              </div>                   
+            </div>          
+        </div>
+      </form>
+      <div class="btn" (click)="saveAddress()" style="margin-top: 20px;">Сохранить</div>  
+    </div>
+  </div>
+</div>

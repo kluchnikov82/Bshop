@@ -1,0 +1,88 @@
+.close-icon {
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    cursor: pointer;
+
+    @media (max-width: 480px) {
+        right: -25px;
+    }
+}
+
+.popup {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    hr {
+        width: 100%;
+        margin: 0;
+    }
+
+    h2, .caption {
+        font-family: 'Montserrat Bold';
+        font-size: 20px;
+        color: #2b2c30;
+        margin-top: 0;
+
+        @media (max-width: 767px) {
+            font-size: 15px;
+        }
+    }
+
+    .caption {
+        margin-top: 25px;
+
+        @media (max-width: 767px) {
+            margin-top: 10px;
+        }
+    }
+
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        font-family: 'Montserrat Medium';
+        font-size: 16px;
+        color: #656568;
+
+        @media (max-width: 767px) {
+            font-size: 13px;
+        }
+
+        input {
+            max-width: 235px;
+            padding: 23px 47px;
+            font-family: 'Montserrat Medium';
+            font-size: 16px;
+            color: #656568;
+            outline: none;
+            border: 1px solid #c9c9c9;
+            border-radius: 32.5px;
+            background: transparent;
+            margin-bottom: 24px;
+
+            &::placeholder {
+                color: #c9c9c9;
+            }
+
+            @media (max-width: 767px) {
+                font-size: 13px;
+            }
+        }
+    }
+
+    .forgot {
+        font-family: 'Montserrat Medium';
+        font-size: 14px;
+        color: #c9c9c9;
+        text-decoration: underline;
+        text-align: center;
+        margin-bottom: 15px;
+        cursor: pointer;
+
+        @media (max-width: 767px) {
+            font-size: 12px;
+        }
+    }
+}

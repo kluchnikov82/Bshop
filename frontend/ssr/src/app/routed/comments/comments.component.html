@@ -1,0 +1,26 @@
+<div class="comments">
+  <breadcrumbs [list]="[{text: 'Главная', link: '/'}, {text: 'Отзывы', link: null}]"></breadcrumbs>
+  <div class="common-caption">
+    <h3 style="padding-bottom: 26px; text-transform: unset;">
+      Отзывы наших покупателей
+    </h3>
+    <hr>
+  </div>
+  <div class="comments__list comments__list-all">
+    <ng-container *ngFor="let item of comments">
+      <div class="comments__item" *ngIf="item.image" [ngClass]="{'comment__wtext': item.text}">
+        <div class="comments__item-img">
+          <img data-src="{{item.image}}" class="lazyload">
+          <div class="comments__item-img-text" *ngIf="item.with_text">
+            <div class="text-before">ДО</div>
+            <div class="text-after">ПОСЛЕ</div>
+          </div>
+        </div>
+        <div class="comments__item-text" *ngIf="item.text">{{item.text}}</div>
+      </div>
+    </ng-container>
+  </div>
+  <div class="comments__btns" *ngIf="showBtnMore">
+    <div class="btn btn__all" (click)="showMore()">Показать еще</div>
+  </div>
+</div>

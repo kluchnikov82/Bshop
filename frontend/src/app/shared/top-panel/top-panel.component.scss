@@ -1,0 +1,8 @@
+a {
+    text-decoration: none;
+    color: hsl(217, 7%, 58%);
+
+    &:hover {
+        color: hsl(0, 100%, 77%);
+    }
+}

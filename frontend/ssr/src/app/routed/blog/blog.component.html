@@ -1,0 +1,59 @@
+<div class="blog">
+  <breadcrumbs [list]="bClist"></breadcrumbs>
+  <div class="category category__blog">
+    <h3>Блог</h3>
+  </div>
+  <mat-select [(value)]="selectedFilter" class="mobile" (selectionChange)="sortArticles()">
+    <mat-option *ngFor="let filterItem of filterTypes" [value]="filterItem.value">
+      {{filterItem.viewValue}}
+    </mat-option>
+  </mat-select>
+  <div class="tabs">
+    <div class="tabs__item" *ngFor="let cat of categories" (click)="toggleActiveCategory(cat)">
+      {{cat.name}}
+      <div class="dropdown">
+        <mat-icon svgIcon="shape"></mat-icon>
+      </div>
+      <div class="dropdown dropdown__panel" [ngClass]="{'active': cat.active}">
+        <div class="dropdown__panel-arrow"></div>
+        <div class="subcat" *ngFor="let subcat of cat.subcats; let i = index; let last = last" [ngClass]="{'no-border' : last}" (click)="filterArticles(subcat)">
+          {{subcat}}
+        </div>
+      </div>
+    </div>
+    <mat-select [(value)]="selectedFilter" class="not-mobile" (selectionChange)="sortArticles()">
+      <mat-option *ngFor="let filterItem of filterTypes" [value]="filterItem.value">
+        {{filterItem.viewValue}}
+      </mat-option>
+    </mat-select>
+  </div>
+  <hr>
+  <div class="list">
+    <div class="article" *ngFor="let article of blog" (click)="openArticle(article.id)">
+      <div class="article__img">
+        <img [src]="article.image">
+      </div>
+      <div class="article__info">
+        {{article.created | dateFormat }}        
+        <span><mat-icon svgIcon="views"></mat-icon>{{article.hit_count}} просмотров</span>
+      </div>
+      <div class="article__caption">
+        {{article.header}}
+      </div>
+      <div class="article__teaser">
+        {{article.teaser}}
+      </div>
+    </div>
+  </div>
+  <!-- <div class="catalog__pager">
+    <div class="pager__btn pager__btn-back">
+      <mat-icon svgIcon="shape"></mat-icon>
+    </div>
+    <div class="pager__pages">
+      <span class="pager__page" *ngFor="let page of pages">{{page}}</span>
+    </div>
+    <div class="pager__btn pager__btn-forward">
+      <mat-icon svgIcon="shape"></mat-icon>
+    </div>
+  </div> -->
+</div>

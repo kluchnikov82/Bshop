@@ -1,0 +1,38 @@
+<div class="article" *ngIf="articleData">
+  <breadcrumbs [list]="bClist"></breadcrumbs>
+  <div class="category category__article">
+    <h3>{{articleData.header}}</h3>
+    <div class="article__date">{{articleData.created | dateFormat : "ddMM"}}</div>
+  </div>
+  <div class="article__inner">
+    <div class="article__body" [innerHTML]="articleData.body"></div>
+    <div class="article__list">
+      <div class="article" *ngFor="let art of articleArray" (click)="openArticle(art.id)">
+        <div class="article__img">
+          <img [src]="art.image">
+        </div>
+        <div class="article__info">
+          {{art.created | dateFormat : "ddMM"}}
+          <span><mat-icon svgIcon="views"></mat-icon>{{art.hit_count}} просмотров</span>
+        </div>
+        <div class="article__caption">
+          {{art.header}}
+        </div>
+        <div class="article__teaser">
+          {{art.teaser}}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="catalog__pager">
+    <div class="pager__btn pager__btn-back" (click)="prevArticle()">
+      <mat-icon svgIcon="shape"></mat-icon>
+    </div>
+    <div class="pager__text pager__text-back">Предыдущая статья</div>
+    <div class="pager__btn pager__btn-forward" (click)="nextArticle()">
+      <mat-icon svgIcon="shape"></mat-icon>
+    </div>
+    <div class="pager__text pager__text-next">Следующая статья</div>
+  </div>
+  
+</div>

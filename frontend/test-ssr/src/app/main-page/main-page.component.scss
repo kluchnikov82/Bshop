@@ -1,0 +1,20 @@
+.messengers {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+
+    &__icon {
+        margin: 0 5px;
+
+        .mat-icon {
+            fill: white;
+        }
+    
+        &:hover {
+    
+            .mat-icon {
+                fill: hsl(0, 100%, 77%);
+            }
+        }
+    }
+}

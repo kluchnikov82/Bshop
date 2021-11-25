@@ -1,0 +1,40 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "==3.0"
+"psycopg2" = "*"
+django-cors-headers = "*"
+django-rest-auth = "*"
+djangorestframework-jwt = "*"
+django-allauth = "*"
+pillow = "*"
+django-admin-extend = "*"
+uwsgi = "*"
+django-admin-tools = "*"
+social-auth-app-django = "*"
+celery = "*"
+django-money = "*"
+sentry-sdk = "==0.9.0"
+"django-rest-framework-social-oauth2" = "*"
+lxml = "*"
+fs-cdek-api = "*"
+boltons = "==20.1.0"
+django-ckeditor = "*"
+django-better-admin-arrayfield = "*"
+django-nested-admin = "*"
+pip = "*"
+pip3 = "*"
+pmb = "*"
+
+[dev-packages]
+pylint = "*"
+flake8 = "*"
+yapf = "*"
+ipython = "*"
+pylint-django = "*"
+
+[requires]
+python_version = "3.6"

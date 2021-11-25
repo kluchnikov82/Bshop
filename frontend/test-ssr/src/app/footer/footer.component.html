@@ -1,0 +1,134 @@
+<div class="footer">
+  <div class="navbar__inner-menu--mobile footer">
+    <ul *ngIf="showFooterMenu">
+      <li>
+        <div class="cat-caption" (click)="catalogState = toggleMenu(catalogState)">
+          КАТАЛОГ ПРОДУКЦИИ
+        </div>          
+        <div class="mobile-menu" [@expandPanel]="catalogState" [ngClass]="{'active-menu': catalogState}">
+          <div class="mobile-menu__cat" *ngFor="let category of menuList; trackBy : trackCategory">
+            <div class="mobile-menu__cat-caption" (click)="category.state = toggleSubMenu(category)">{{category.name}}</div>
+            <div class="mobile-menu__cat-content" [@expandPanel]="category.state" [ngClass]="{'active-menu': category.state == 'expanded'}">
+              <div class="mobile-menu__subcat" *ngFor="let subcat of category.subcats" (click)="openCatalog(category.name, subcat.name)">{{subcat.name}}</div>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="cat-caption" (click)="serviceState = toggleMenu(serviceState)">
+          СЕРВИС
+        </div>          
+        <div class="mobile-menu" [@expandPanel]="serviceState" [ngClass]="{'active-menu': serviceState}">
+          <div class="mobile-menu__cat">
+            <div class="mobile-menu__cat-caption" (click)="openPage('info/shipping')">Доставка</div>
+            <div class="mobile-menu__cat-caption" (click)="openPage('info/paying')">Оплата</div>
+            <!-- <div class="mobile-menu__cat-caption" (click)="openPage('info/order-return')">Возврат товара</div> -->
+            <div class="mobile-menu__cat-caption" (click)="openPage('info/faq')">Вопрос - ответ</div>
+            <div class="mobile-menu__cat-caption" (click)="openPage('info/certificates')">Сертификация</div>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="cat-caption" (click)="companyState = toggleMenu(companyState)">
+          КОМПАНИЯ
+        </div>          
+        <div class="mobile-menu" [@expandPanel]="companyState" [ngClass]="{'active-menu': companyState}">
+          <div class="mobile-menu__cat">
+            <div class="mobile-menu__cat-caption" (click)="openPage('info/about')">О нас</div>
+            <div class="mobile-menu__cat-caption" (click)="openPage('info/contacts')">Контакты</div>
+            <div class="mobile-menu__cat-caption" (click)="openPage('comments')">Отзывы</div>
+            <div class="mobile-menu__cat-caption" (click)="openPage('promo')">Акции</div>
+            <div class="mobile-menu__cat-caption" (click)="openPage('blog')">Блог</div>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="cat-caption" (click)="socialState = toggleMenu(socialState)">
+          МЫ В СОЦ.СЕТЯХ
+        </div>
+        <div class="mobile-menu" [@expandPanel]="socialState" [ngClass]="{'active-menu': socialState}">
+          <div class="mobile-menu__cat">
+            <div class="social-links">
+              <!-- Instagram -->
+              <div class="social-links__item instagram" (click)="openInst()">
+                <mat-icon svgIcon="instagram"></mat-icon>
+              </div>
+              <!--  VK -->
+              <div class="social-links__item vk" (click)="openVK()">
+                <mat-icon svgIcon="vk"></mat-icon>
+              </div>
+              <!-- Facebook -->
+              <div class="social-links__item fb" (click)="openFB()">
+                <mat-icon svgIcon="fb"></mat-icon>
+              </div>      
+            </div>            
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="cat-caption" (click)="openPopup()">
+          ЗАДАТЬ ВОПРОС
+        </div>
+      </li>
+      <li>
+        <div class="cat-caption last">
+          <p><a href="https://dari-cosmetics.ru/assets/docs/dogovor.pdf">Договор - оферта</a></p>
+          <p><a href="https://dari-cosmetics.ru/assets/docs/dogovor.pdf">Политика конифиденциальности</a></p>          
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="footer__logo">
+    <img src="https://dari-cosmetics.ru/assets/logo-dari-2-1.png" width="84px" height="84px">
+  </div>
+  <div class="footer__content">
+    <div class="footer__catalog">
+      <p class="caption">Каталог продукции</p>
+      <ul>
+        <li *ngFor="let category of menuList" (click)="openCatalog(category.name)">{{category.name}}</li>
+      </ul>
+    </div>
+    <div class="footer__service">
+      <p class="caption">Сервис</p>
+      <ul>
+        <li (click)="openPage('info/shipping')">Доставка</li>
+        <li (click)="openPage('info/paying')">Оплата</li>
+        <!-- <li (click)="openPage('info/order-return')">Возврат товара</li> -->
+        <li (click)="openPage('info/faq')">Вопрос - ответ</li>
+        <li (click)="openPage('info/certificates')">Сертификация</li>
+        <li (click)="openDog()">Договор-оферта</li>
+      </ul>
+    </div>
+    <div class="footer__company">
+      <p class="caption">Компания</p>
+      <ul>
+        <li (click)="openPage('info/about')">О нас</li>
+        <li (click)="openPage('info/contacts')">Контакты</li>
+        <li (click)="openPage('comments')">Отзывы</li>
+        <li (click)="openPage('promo')">Акции</li>
+        <li (click)="openPage('blog')">Блог</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer__soc">
+    <p class="caption">Мы в соц.сетях</p>
+    <div class="social-links">
+      <!-- Instagram -->
+      <div class="social-links__item instagram" (click)="openInst()">
+        <mat-icon svgIcon="instagram"></mat-icon>
+      </div>
+      <!--  VK -->
+      <div class="social-links__item vk" (click)="openVK()">
+        <mat-icon svgIcon="vk"></mat-icon>
+      </div>
+      <!-- Facebook -->
+      <div class="social-links__item fb" (click)="openFB()">
+        <mat-icon svgIcon="fb"></mat-icon>
+      </div>      
+    </div>
+  </div>
+</div>
+<div class="footer__row">
+  <p>&copy;Dari cosmetics 2019. Все права защищены. Все права на материалы, опубликованные на сайте, охраняются в соответствии с 
+  законодательством РФ. При использовании материалов активная ссылка на источник обязательна.</p>
+</div>

@@ -1,0 +1,160 @@
+<div class="main-page" [ngClass]="(loaded)? 'loaded' : ''">
+  <slider [data]="arraySlides" *ngIf="arraySlides.length"></slider>
+  <div class="programs">
+    <div class="programs__list">
+       <!--<div>-->
+      <perfect-scrollbar #sliderPrograms class="programs__content"> 
+        <div class="programs__item programs__complex" (click)="openPage('care-program')">
+          <div class="programs__caption">
+            Выбери свою программу ухода
+          </div>
+          <div class="programs__text">
+            Индивидуальные комплексные программы для твоей кожи
+          </div>
+        </div>
+        <div class="programs__item programs__business">
+          <div class="programs__caption">
+            СТАТЬ ПАРТНЕРОМ
+          </div>
+          <div class="programs__link programs__link-main" (click)="openPage('info/partners')">
+            Подробнее
+          </div>
+        </div>
+      </perfect-scrollbar>       
+  <!--       </div>-->
+    </div>
+
+  </div>
+
+  <div class="common-caption">
+    <h3>
+      Выберите раздел
+    </h3>
+    <hr>
+  </div>
+
+  <div class="categories">
+    <div class="categories__inner">
+      <div class="categories__item categories__item-{{i}}" *ngFor="let category of categories; let i = index" [style.backgroundImage]="getCategoryBkg(category)" (click)="openCatalog(category.name)">
+        <div class="categories__link">
+          {{category.name}}
+          <mat-icon svgIcon="shape"></mat-icon>
+        </div>
+      </div>      
+    </div>
+  </div>
+
+  <div class="common-caption">
+    <h3>
+      Отзывы
+    </h3>
+    <hr>
+  </div>
+
+  <div class="comments">
+    <div class="comments__list" [ngClass]="{'hide-arrows' : checkBlockComments()}">
+      <mat-icon svgIcon="back" class="slider-arrow" (click)="moveSlider('left')"></mat-icon>
+      <!--<div >-->
+       <perfect-scrollbar class="comments__content" #sliderFeedback> 
+        <div class="comments__item active-component" *ngFor="let item of comments">
+          <div class="comments__item-img">
+            <img [src]="getCommentImg(item)">
+            <div class="mobile">
+              <p class="comments__item-caption">{{getUserName(item) | initials}}</p>
+              <!-- <p class="comments__item-subcaption">@{{item.user.username}}</p> -->
+            </div>
+          </div>          
+          <div class="comments__item-content">
+            <p class="comments__item-caption">{{getUserName(item) | initials}}</p>
+            <!-- <p class="comments__item-subcaption">@{{item.user.username}}</p> -->
+            <div class="comments__item-text">
+              {{item.text}}
+              <div class="videolink" *ngIf="item.video_link" (click)="openVideo(item.video_link)">Видео-отзыв</div>
+            </div>
+          </div>        
+        </div>
+       </perfect-scrollbar> 
+      <!--</div>-->
+      <mat-icon svgIcon="forward" class="slider-arrow" (click)="moveSlider('right')"></mat-icon>
+    </div>
+    <div class="comments__btns">
+      <div class="btn btn__all" (click)="openPage('comments')">Все отзывы</div>
+    </div>
+  </div>
+
+  <div class="consult" #consultForm>
+    <div class="consult__form">
+      <div class="consult__form-left">
+        <h3 style="color: white;">Индивидуальная консультация</h3>
+        <p>Заполните форму, и наш специалист (косметолог) свяжется с Вами:</p>
+        <div class="btn__mobile">
+          <div class="btn btn__call" (click)="openPopupConsult()">Заказать звонок</div>
+          <div class="messengers mobile">
+            <span>Или пишите</span>
+            <!-- <a class="messengers__icon" href="https://vk.me/club43817012"><mat-icon svgIcon="vk_message"></mat-icon></a> -->
+            <a class="messengers__icon" href="https://wa.me/79033668260"><mat-icon svgIcon="whatsapp"></mat-icon></a>
+            <a class="messengers__icon" href="viber://chat?number=79033668260"><mat-icon svgIcon="viber"></mat-icon></a>
+          </div> 
+        </div>       
+        <div class="consult__form-data">
+          <input type="text" placeholder="Ваше имя" [(ngModel)]="username" required>
+          <input type="phone" placeholder="+7(900)123-45-67" [(ngModel)]="userphone" phoneMask required>
+          <div class="agree">
+            <div class="check" (click)="agree = !agree" [ngClass]="(agree)? 'active' : ''"></div>
+            <div class="text" (click)="openDoc()">Я даю свое согласие на обработку персональных данных</div>
+          </div>
+          <!-- <label class="agree"><input type="checkbox"> </label>  -->
+          <div class="btns">
+            <div class="btn btn__call" [ngClass]="{'disable': !agree}" (click)="sendMessage()">Заказать звонок</div>
+            <div class="messengers">
+              <span>Или пишите</span>
+              <!-- <a class="messengers__icon" href="https://vk.me/club43817012"><mat-icon svgIcon="vk_message"></mat-icon></a> -->
+              <a class="messengers__icon" href="https://wa.me/79033668260"><mat-icon svgIcon="whatsapp"></mat-icon></a>
+              <a class="messengers__icon" href="viber://chat?number=79033668260"><mat-icon svgIcon="viber"></mat-icon></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="consult__form-right">
+        <img src="https://dari-cosmetics.ru/assets/face2.jpg">
+      </div>
+    </div>
+  </div>
+
+  <div class="common-caption">
+    <h3 style="padding-bottom: 25px;">
+      Следите за обновлениями
+    </h3>
+    <hr>
+  </div>
+
+  <div class="updates">
+    <div class="subcaption">
+      Подпишитесь на нас в <b>Instagram @daricosmetics,</b>
+      чтобы не пропустить актуальные новости компании, акции и новинки:
+    </div>
+    <div class="updates__content">
+      <div class="updates__btns">
+        <div class="btn subscribe" (click)="openInst()">Подписаться
+          <div class="social__item inst">
+            <mat-icon svgIcon="instagram"></mat-icon>
+          </div>          
+        </div>
+        <div class="social">
+          <div class="social__item vk" (click)="openVK()">
+            <mat-icon svgIcon="vk"></mat-icon>
+          </div>
+          <div class="social__item fb" (click)="openFB()">
+            <mat-icon svgIcon="fb"></mat-icon>
+          </div>
+          <div class="arrow">
+            <mat-icon svgIcon="arrowShare"></mat-icon>
+          </div>
+        </div>
+      </div>
+      <div class="updates__imgs">
+        <instafeed></instafeed>
+      </div>
+    </div>
+  </div>
+</div>

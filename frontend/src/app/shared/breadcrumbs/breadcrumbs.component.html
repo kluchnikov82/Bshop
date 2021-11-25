@@ -1,0 +1,3 @@
+<div class="breadcrumbs" *ngIf="list">
+  <span *ngFor="let p of list; let last = last" class="item" [ngClass]="{'last' : last}" (click)="openPage(p)">{{p.text}}</span>
+</div>

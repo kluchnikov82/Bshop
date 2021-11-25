@@ -1,0 +1,150 @@
+<div class="order" *ngIf="orderData">
+  <breadcrumbs [list]="[{text: 'Главная', link: '/'}, {text: 'Оформление заказа', link: null}]"></breadcrumbs>
+  <div class="common-caption common-caption__cart">
+    <h3 style="padding-bottom: 26px; text-transform: unset;">
+      Спасибо за заказ
+    </h3>
+    <hr>
+  </div>
+  <div class="not-login not-login__order">
+    <b>Ваш номер заказа: {{orderData.order_no}}. </b> 
+    <span *ngIf="orderData.payed" style="font-family: 'Gilroy Regular'; text-decoration: none; cursor: initial;">Заказ оплачен (статус - {{orderData.status}})</span>
+    <span *ngIf="!orderData.payed" style="font-family: 'Gilroy Regular'; text-decoration: none; cursor: initial;">Статус будет отправлен на почту</span>
+  </div>
+  <div class="order__data" *ngIf="productsData || kitsData">
+    <div class="order__data-profile">
+      <div class="data-item">
+        <div class="text">Контактное лицо</div>
+        <div class="middle"></div>
+        <div class="value">{{orderData.surname}} {{orderData.name}} {{(orderData.patronymic) ? orderData.patronymic : ''}}</div>
+      </div>
+      <div class="data-item">
+        <div class="text">Контактный номер</div>
+        <div class="middle"></div>
+        <div class="value">{{orderData.phone}}</div>
+      </div>
+      <div class="data-item">
+        <div class="text">E-mail</div>
+        <div class="middle"></div>
+        <div class="value">{{orderData.email}}</div>
+      </div>
+      <div class="data-item">
+        <div class="text">Адрес доставки</div>
+        <div class="middle"></div>
+        <div class="value">{{getAddress()}}</div>
+      </div>
+      <div class="data-item">
+        <div class="text">Имя получателя</div>
+        <div class="middle"></div>
+        <div class="value">{{orderData.name}} {{orderData.surname}}</div>
+      </div>
+      <div class="data-item">
+        <div class="text">Способ доставки</div>
+        <div class="middle"></div>
+        <div class="value">{{getDeliveryType()}}</div>
+      </div>
+      <div class="data-item">
+        <div class="text">Стоимость доставки</div>
+        <div class="middle"></div>
+        <div class="value">{{orderData.shipping_amount.toLocaleString('ru')}} &#8381;</div>
+      </div>
+      <div class="data-item" *ngIf="orderData.track_no">
+        <div class="text">Трек-код посылки</div>
+        <div class="middle"></div>
+        <div class="value">{{orderData.track_no}}</div>
+      </div>
+      <div class="data-item mobile">
+        <div class="sum">Сумма к оплате</div>
+        <div class="middle"></div>
+        <div class="value">{{(orderData.total_amount + orderData.shipping_amount - (orderForm.get('bonusDiscount').value)) | number : '1.2-2' : 'ru'}} &#8381;</div>
+      </div>      
+      <!-- <div class="data-item">
+        <div class="text" *ngIf="orderData.memo">{{orderData.memo}}</div>
+      </div> -->
+      <div class="btns" *ngIf="!orderData.payed">
+        <div class="btn" (click)="pay()">Оплатить заказ</div>
+        <div class="bonuses" *ngIf="bonusAmount">
+          <div class="form-item" [formGroup]="orderForm">
+            <div class="label">Использовать бонусов</div>
+            <div class="input">
+              <input type="text" formControlName="bonusDiscount">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="cart-info">
+      <div class="caption">Ваш заказ</div>
+      <div class="product-list">
+      <!-- <perfect-scrollbar > -->
+        <div class="product-item" *ngFor="let prod of orderEvents">
+          <div class="img">
+            <img [src]="getEventImg(prod)">
+          </div>
+          <div class="info">
+            <div class="name">Акция {{prod.event.name}}</div>
+            <div class="count">
+              <div class="value value__count">{{prod.quantity}}</div>
+              <div class="price">{{getEventPrice(prod).toLocaleString('ru')}} &#8381;</div>
+            </div>
+          </div>
+        </div>
+        <div class="product-item" *ngFor="let prod of productsData">
+          <div class="img">
+            <img [src]="getThumbImg(prod)" >
+          </div>
+          <div class="info">
+            <div class="name">{{prod.name}}</div>
+            <div class="sub">{{prod.english_name}}</div>
+            <div class="count">
+              <div class="value value__count">{{prod.quantity}}</div>
+              <div class="price">{{prod.price.toLocaleString('ru')}} &#8381;</div>
+            </div>
+          </div>
+        </div>
+        <div class="product-item" *ngFor="let prog of kitsData">
+          <div class="img">
+            <img [src]="getProgramData(prog, 'image')" >
+          </div>
+          <div class="info">
+            <div class="name">Программа {{prog.name}}</div>            
+            <div class="count">
+              <div class="value value__count">{{getProgramData(prog,'quantity')}}</div>
+              <div class="price">{{prog.price}} &#8381;</div>
+            </div>
+          </div>
+        </div>        
+      <!-- </perfect-scrollbar> -->
+      </div>
+      <div class="cart-sum padding-top-15">
+        <div class="text">Итого по заказу: <span *ngIf="isPartner && orderData.own">(скидка {{(user.current_discount * 100)}}%)</span></div>
+        <div class="sum">{{orderData.total_amount_wo_discount | number : '1.2-2' : 'ru'}} &#8381;</div>
+      </div>
+      <div class="cart-sum padding-top-15" *ngIf="promoDiscount">
+        <div class="text">Скидка ({{(promoDiscountValue * 100) | number : 0}}%)</div>
+        <div class="sum">{{(orderData.total_amount_wo_discount * promoDiscountValue) | number : '1.2-2' : 'ru'}} &#8381;</div>
+      </div>
+      <div class="cart-sum padding-top-15" *ngIf="promoRef">
+        <div class="text">Кэшбэк (5%)</div>
+        <div class="sum">{{(orderData.total_amount * 0.05) | number : '1.2-2' : 'ru'}} &#8381;</div>
+      </div>      
+      <div class="cart-sum padding-top-15">
+        <div class="text">Сумма доставки:</div>
+        <div class="sum">{{orderData.shipping_amount | number : '1.2-2' : 'ru'}} &#8381;</div>
+      </div>
+      <div class="cart-sum padding-top-15">
+        <div class="text">Всего:</div>
+        <div class="sum">{{(orderData.total_amount + orderData.shipping_amount) | number : '1.2-2' : 'ru'}} &#8381;</div>
+        <!-- <div class="sum" *ngIf="isPartner">{{((1 - user.current_discount) * getCartSum() + orderData.shipping_amount) | number : 0}} &#8381;</div> -->
+      </div>
+      <div class="cart-sum padding-top-15" *ngIf="orderData.memo">
+        <div class="sum">Комментарий:</div>
+        <div class="text">{{orderData.memo}}</div>
+      </div>
+      <div class="cart-sum padding-top-15 not-mobile" *ngIf="bonusAmount">
+        <div class="sum">Сумма к оплате:</div>
+        <div class="sum">{{(orderData.total_amount + orderData.shipping_amount - (orderForm.get('bonusDiscount').value)) | number : '1.2-2' : 'ru'}} &#8381;</div>
+      </div>
+    </div>
+  </div>
+</div>

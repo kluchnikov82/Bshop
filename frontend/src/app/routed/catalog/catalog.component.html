@@ -1,0 +1,115 @@
+<div class="catalog" #catalogContent>
+  <breadcrumbs [list]="bClist"></breadcrumbs>
+  <div class="category">
+    <h3>{{(currentCategory)? categoryDescription : 'Каталог'}}</h3>
+  </div>
+  <div class="catalog__inner">
+    <div class="catalog__sidebar">
+      <div class="catalog__menu">
+        <div class="catalog__menu-item" *ngFor="let item of menuList">
+          <div class="catalog__menu-item--category" [ngClass]="(item.name == currentCategory) ? 'active' : ''" (click)="openCategory(item)">
+            {{item.name}}
+          </div>          
+          <div class="catalog__menu-subcats" [@expandPanel]="item.state" [ngClass]="(item.state == 'expanded') ? 'active' : ''">
+            <div class="subcat" *ngFor="let subcat of item.subcats" (click)="changeSubcat(subcat)">
+              {{subcat.name}}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="product-kits" *ngIf="filteredKits.length">
+        <div class="product-kits__caption">Программы ухода</div>
+        <div class="product-kits__content">
+          <div class="product-kits__item" *ngFor="let kit of filteredKits">
+            <div class="check" (click)="chooseKit(kit)" [ngClass]="{'active-kit': kit.selected}"></div>
+            <div class="kit-name">{{kit.kit_name}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="product-kits" *ngIf="maxPrice">
+        <div class="product-kits__caption">Стоимость в руб.</div>
+        <div class="product-kits__content">
+          <div class="price-range">
+            <div class="price-range__inputs">
+              <input type="text" [(ngModel)]="minPrice" [value]="minPrice.toLocaleString('ru')" (input)="onChangePrice()">
+              &mdash;
+              <input type="text" [(ngModel)]="maxPrice" [value]="maxPrice.toLocaleString('ru')" (input)="onChangePrice()">
+            </div>
+            <div class="price-range__slider">
+              <nouislider [config]="priceSliderConfig" [(ngModel)]="priceRange" (ngModelChange)="onChangeRange($event)"></nouislider>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="catalog__right" *ngIf="filteredProducts">
+      <div class="catalog__filter--mobile">
+        <div class="cat-caption" (click)="filterState = toggleMenu(filterState)">
+          ФИЛЬТРЫ
+        </div>          
+        <div class="mobile-menu" [@expandPanel]="filterState" [ngClass]="{'active-menu': filterState}">
+          <div class="product-kits__content" *ngIf="filteredKits.length">
+            <div class="cat-caption" (click)="programState = toggleMenu(programState)">
+              ПРОГРАММА УХОДА
+            </div>
+            <div class="mobile-inner" [@expandPanel]="programState">
+              <div class="product-kits__item" *ngFor="let kit of filteredKits">
+                <div class="check" (click)="chooseKit(kit)" [ngClass]="{'active-kit': kit.selected}" [@expandPanel]="programState"></div>
+                <div class="kit-name" [@expandPanel]="programState">{{kit.kit_name}}</div>
+              </div>              
+            </div>
+          </div>
+          <div class="cat-caption" (click)="valueState = toggleMenu(valueState)">
+            СТОИМОСТЬ
+          </div>
+          <div class="mobile-menu" [@expandPanel]="valueState" [ngClass]="{'active-menu': valueState}" *ngIf="maxPrice">
+            <div class="price-range">
+              <input type="text" [(ngModel)]="minPrice" [value]="minPrice.toLocaleString('ru')" (input)="onChangePrice()">
+              &mdash;
+              <input type="text" [(ngModel)]="maxPrice" [value]="maxPrice.toLocaleString('ru')" (input)="onChangePrice()">
+            </div>         
+          </div>
+          <div class="cat-caption">
+            <mat-select [(value)]="selectedFilter" (selectionChange)="sortCatalog()">
+              <mat-option *ngFor="let filterItem of filterTypes" [value]="filterItem.value">
+                {{filterItem.viewValue}}
+              </mat-option>
+            </mat-select>
+          </div>
+        </div>
+      </div>
+      <div class="catalog__filter">
+        <mat-select [(value)]="selectedFilter" (selectionChange)="sortCatalog()">
+          <mat-option *ngFor="let filterItem of filterTypes" [value]="filterItem.value">
+            {{filterItem.viewValue}}
+          </mat-option>
+        </mat-select>
+      </div>
+      <div class="catalog__content" *ngIf="filteredProducts.length">
+        <div class="product" *ngFor="let productItem of filteredProducts; trackBy : trackFilterProducts">
+          <div class="product__inner" (click)="showProduct(productItem)">
+            <div class="badge" *ngIf="productItem.hit">ХИТ</div>
+            <div class="badge badge__new" *ngIf="productItem.new">NEW</div>
+            <div class="overlay">
+              <div class="product__inner">
+                <img [src]="getProductImage(productItem)">
+                <div class="product__caption">{{productItem.name}}</div>
+                <div class="product__subcaption">{{productItem.english_name}}</div>
+                <div class="product__price">{{productItem.price}} &#8381;</div>               
+                <div class="btn btn-add" (click)="addToCart(productItem, $event)" style="font-size: 10px;">В корзину</div>
+                <!-- <div class="product__animate" [@animateCart]="productItem.state"></div> -->
+              </div>
+            </div>
+            <img [src]="getProductImage(productItem)">
+            <div class="product__caption">{{productItem.name}}</div>
+            <div class="product__subcaption">{{productItem.english_name}}</div>
+            <div class="product__price">{{productItem.price}} &#8381;</div>
+          </div>
+        </div>
+      </div>
+      <div class="catalog__content" *ngIf="!filteredProducts || !filteredProducts.length">
+        Поиск не дал результатов
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,93 @@
+<div class="care-programs">
+  <breadcrumbs [list]="[{text: 'Главная', link: '/'}, {text: 'Программы', link: null}]"></breadcrumbs>
+  <div class="category category__care-programs">
+    <h3>Программы ухода</h3>
+  </div>
+  <div class="tabs" style="overflow-x: auto;">
+    <div class="tabs__item" *ngFor="let cat of categories" (click)="changeTab(cat)">
+      {{cat}}
+    </div>
+  </div>
+  <hr style="margin-bottom: 39px;">
+  <div class="care-programs__item" *ngFor="let program of filteredPrograms; let i = index;">
+    <div class="name">
+      {{program.name}}
+    </div>
+    <div class="image" 
+        [style.backgroundImage]="getBkgImg(program)"
+        [style.backgroundPosition]="getBkgSize(program)">
+      <!-- <img [src]="program.primary_image"> -->
+      <div class="preferences">
+        <div class="preference preference-{{k}}" *ngFor="let pref of program.preferences; let k = index;">
+          <span class="num"><mat-icon svgIcon="checkBold"></mat-icon>{{pref.seq_no}}</span>
+          <p class="description">{{pref.description}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="time time-{{i}}">
+      <mat-icon svgIcon="watch"></mat-icon>
+      <span>Время: {{program.usage_period}}</span>      
+    </div>
+    <div class="info">
+      <div class="info__item problem">
+        <div class="icon">
+          <mat-icon svgIcon="problem"></mat-icon>
+        </div>
+        <div class="inner">
+          <p class="caption">
+            Проблема
+          </p>
+          <p class="value">
+            {{program.problem}}
+          </p>           
+        </div>       
+      </div>
+      <div class="info__item">
+        <div class="icon">
+          <mat-icon svgIcon="target"></mat-icon>
+        </div>
+        <div class="inner">
+          <p class="caption">
+            Цель
+          </p>
+          <p class="value">
+            {{program.target}}
+          </p>           
+        </div>       
+      </div>
+      <div class="info__item leaf">
+        <div class="icon">
+          <mat-icon svgIcon="leaf"></mat-icon>
+        </div>
+        <div class="inner">
+          <p class="caption">
+            Формула
+          </p>
+          <p class="value">
+            {{program.formula}}
+          </p>            
+        </div>
+      </div>
+      <div class="info__item spa">
+        <div class="icon">
+          <mat-icon svgIcon="spa"></mat-icon>
+        </div>
+        <div class="inner">
+          <p class="caption">
+            Преимущества
+          </p>
+          <p class="value">
+            {{program.preference}}
+          </p>              
+        </div>
+      </div>
+    </div>
+    <div class="btns" (click)="openProgram(program)">
+      <div class="btn btn__login btn__start">
+        Старт
+        <mat-icon svgIcon="shape"></mat-icon>
+      </div>
+    </div>
+  </div>
+
+</div>

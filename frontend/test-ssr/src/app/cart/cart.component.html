@@ -1,0 +1,103 @@
+<div class="cart">
+  <breadcrumbs [list]="[{text: 'Главная', link: '/'}, {text: 'Корзина', link: null}]"></breadcrumbs>
+  <div class="common-caption common-caption__cart">
+    <h3 style="padding-bottom: 26px; text-transform: unset;">
+      В корзине {{getCartCount()}}
+    </h3>
+    <hr>
+  </div>
+  <div class="freeDeliveryInfo" *ngIf="getCartSum(true) < 4000">
+    <div class="text">
+      Дополните корзину еще на <b>{{(4000 - getCartSum(true)) | number : '1.2-2' : 'ru'}} руб.</b> и получите <b>доставку бесплатно! </b>
+      <a href="/catalog">Продолжить покупки</a>
+    </div>    
+    <div class="mobile-btn" (click)="openCatalog()"></div>
+  </div>
+  <div class="cart__content">
+    <div class="cart__caption">
+      <div class="cart__caption-item cart__caption-item-first">Товар</div>
+      <div class="cart__caption-item cart__caption-item-product"></div>
+      <div class="cart__caption-item">Количество, шт.</div>
+      <div class="cart__caption-item">Сумма, &#8381;</div>
+      <div class="cart__caption-item cart__caption-item-empty"></div>
+    </div>
+    <div class="cart__items">
+      <div class="cart__item" *ngFor="let ev of cartEvents">
+        <div class="cart__item-img">
+          <img [src]="getEventImg(ev)">
+        </div>
+        <div class="cart__item-product">
+          Акция {{ev.event_name}}
+        </div>
+        <div class="cart__item-count price">
+          <div class="price__quantity">
+              <div class="price__quantity price__quantity-change">
+                <div class="less" (click)="changeEventQuantity(ev, 'less')">-</div>
+                <input type="text" [value]="getEventData(ev, 'quantity')" readonly>
+                <div class="more" (click)="changeEventQuantity(ev, 'more')">+</div>
+              </div>
+          </div>
+        </div>
+        <div class="cart__item-sum">{{getEventPrice(ev) | number : '1.2-2' : 'ru'}}  &#8381;</div>
+        <div class="cart__item-del" (click)="removeFromCart(ev)">&#10006;</div>
+      </div>
+      <div class="cart__item" *ngFor="let product of products; trackBy: trackProducts">
+        <div class="cart__item-img">
+          <img [src]="getProductData(product, 'primary_image')">
+        </div>          
+        <div class="cart__item-product">
+          {{getProductData(product, 'name')}}
+          <div class="product-sub">{{getProductData(product, 'english_name')}}</div>
+        </div>
+        <div class="cart__item-count price">
+          <div class="price__quantity">
+              <div class="price__quantity price__quantity-change">
+                  <div class="less" (click)="changeQuantity(product, 'less')">-</div>
+                  <input type="text" [value]="getProductData(product, 'quantity')" readonly>
+                  <div class="more" (click)="changeQuantity(product, 'more')">+</div>                        
+              </div>
+          </div>
+        </div>
+        <div class="cart__item-sum">{{getProductData(product, 'sum') | number : '1.2-2' : 'ru'}}  &#8381;</div>
+        <div class="cart__item-del" (click)="removeFromCart(product)">&#10006;</div>
+    </div>
+    <div class="cart__item" *ngFor="let prog of cartKits; trackBy: trackProducts">
+      <div class="cart__item-img">
+        <img [src]="getProgramData(prog, 'image')">
+      </div>        
+      <div class="cart__item-product">
+        Программа {{prog.name}}
+      </div>
+      <div class="cart__item-count price">
+        <div class="price__quantity">
+            <div class="price__quantity price__quantity-change">
+                <div class="less" (click)="changeQuantity(prog, 'less')">-</div>
+                <input type="text" [value]="getProductData(prog, 'quantity')" readonly>
+                <div class="more" (click)="changeQuantity(prog, 'more')">+</div>                        
+            </div>
+        </div>
+      </div>
+      <div class="cart__item-sum">{{getProductData(prog, 'sum') | number : '1.2-2' : 'ru'}}  &#8381;</div>
+      <div class="cart__item-del" (click)="removeFromCart(prog)">&#10006;</div>      
+    </div>
+  </div>
+  <div class="cart__sum">
+    <div class="promocode">
+      <div class="promocode__input" *ngIf="!orderHasPromocode" (click)="inputPromocode.focus()">
+        <input type="text" [(ngModel)]="promocode" placeholder="Есть промокод?" #inputPromocode>
+      </div>
+      <div class="btn promocode__btn" (click)="setPromocode(promocode)" *ngIf="!orderHasPromocode">Применить</div>
+      <div class="promocode__text" *ngIf="orderHasPromocode">
+        <div class="promocode__text-value" [innerHTML]="promocodeText"></div>
+        <div class="promocode__text-delete" (click)="deletePromocode()">&#10006;&nbsp;удалить промокод</div>
+      </div>
+    </div>
+    <div class="cart__sum-result">
+      Итого: <span>{{getCartSum() | number : '1.2-2' : 'ru'}} &#8381;</span>
+      <div class="cart__sum-result" *ngIf="promoDiscount">Всего к оплате: <span>{{getCartSum(true) | number : '1.2-2' : 'ru'}} &#8381;</span></div>
+    </div>
+  </div>
+  <div class="cart__btns">
+    <div class="btn btn__order" (click)="confirmOrder()" style="margin-left: auto;">Оформить заказ</div>
+  </div>
+</div>

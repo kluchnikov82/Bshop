@@ -1,0 +1,156 @@
+<div class="promo" *ngIf="events">
+  <breadcrumbs [list]="[{text: 'Главная', link: '/'}, {text: 'Акции', link: null}]"></breadcrumbs>
+  <div class="category category__promo">
+    <h3>Акции</h3>
+  </div>
+  <div class="promo__content">
+    <div class="promo__list">
+      <div class="promo__item width-{{getPromoWidth(promoEvent)}}" *ngFor="let promoEvent of events" 
+          [ngClass]="{'promo__item-2': !promoEvent.half_screen, 
+                      'promo__item-1': promoEvent.half_screen}">
+          <div class="relative" *ngIf="promoEvent.event_products_some_the_same.length">
+            <div class="relative__content">
+              <div class="relative__item" *ngFor="let relProd of promoEvent.event_products_some_the_same; let last = last">
+                <!-- <div class="relative__item-check" [ngClass]="{'active': relProd.check}" (click)="toggleCheck($event, relProd)"></div> -->
+                <div class="img">
+                  <img [src]="getThumbImg(relProd)">
+                  <div class="relative__item-count">
+                    {{relProd.quantity}}шт.
+                  </div>
+                </div>
+                <div class="name">
+                  <p>{{relProd.product_name}}</p>
+                  <div class="price">
+                      {{relProd.price}} &#8381;
+                  </div>                    
+                </div>               
+              </div>
+              <div class="relative__item-plus" *ngIf="promoEvent.gift_count">+</div>
+              <div class="relative__item last" *ngIf="promoEvent.gift_count">
+                <div class="img">
+                    <img [src]="getThumbImg(promoEvent.gift)">
+                    <div class="relative__item-count">
+                      {{promoEvent.gift_count}}шт.
+                    </div>
+                </div>
+                <div class="name">
+                    <p>{{promoEvent.gift.name}}</p>
+                    <div class="price">0 &#8381;</div>                    
+                </div>
+              </div> 
+            </div>
+          </div>
+
+          <div class="relative" *ngIf="promoEvent.event_products_bundle.length">
+            <div class="relative__content">
+              <div class="relative__item" *ngFor="let relProd of promoEvent.event_products_bundle; let last = last">
+                <!-- <div class="relative__item-check" [ngClass]="{'active': relProd.check}" (click)="toggleCheck($event, relProd)"></div> -->
+                <div class="img">
+                  <img [src]="getThumbImg(relProd)">
+                  <!-- <div class="relative__item-count">
+                    {{relProd.quantity}}шт.
+                  </div> -->
+                </div>
+                <div class="name">
+                  <p>{{relProd.product_name}}</p>
+                  <div class="price">
+                      {{relProd.price}} &#8381;
+                  </div>                    
+                </div>
+                <div class="relative__item-plus" *ngIf="!last">+</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative" *ngIf="promoEvent.event_products_for2any.length">
+            <div class="relative__content">
+              <div class="relative__item" *ngFor="let relProd of promoEvent.event_products_for2any; let last = last">
+                <div class="img">
+                    <img [src]="getThumbImg(relProd)">
+                </div>
+                <div class="name">
+                    <p>{{relProd.product_name}}</p>
+                    <div class="price">
+                        {{relProd.price}} &#8381;
+                    </div>                    
+                </div>
+                <div class="relative__item-check" 
+                    [ngClass]="{'active': relProd.check}" 
+                    (click)="toggleCheck($event, relProd, promoEvent)" 
+                    *ngIf="promoEvent.event_products_for2any.length > 2 && !(promoEvent.for_n_any_quantity == promoEvent.event_products_for2any.length)"></div>
+                <div class="relative__item-plus" *ngIf="promoEvent.gift_count || !last">+</div>
+              </div>
+              <div class="relative__item last" *ngIf="promoEvent.gift_count">
+                <div class="img">
+                    <img [src]="getThumbImg(promoEvent.gift)">
+                    <div class="relative__item-count" *ngIf="promoEvent.gift_count > 1">
+                      {{promoEvent.gift_count}}шт.
+                    </div>
+                </div>
+                <div class="name">
+                    <p>{{promoEvent.gift.name}}</p>
+                    <div class="price">0 &#8381;</div>                    
+                </div>
+                <div class="relative__item-check-empty" *ngIf="promoEvent.event_products_for2any.length > 2 && !(promoEvent.for_n_any_quantity == promoEvent.event_products_for2any.length)"></div>
+              </div>
+              <!-- <div class="relative__sum">
+                  <div class="relative__sum-value">{{getPromoSum(promoEvent)}} &#8381;</div>
+                  <div class="btn" (click)="buyRelative(promoEvent)" [ngClass]="{'disable' : getPromoSum(promoEvent) <= 0}">Купить</div>
+              </div> -->
+            </div>
+          </div>
+
+          <div class="relative" *ngIf="promoEvent.discount_product">
+            <div class="relative__content">
+              <div class="relative__item">
+                <div class="img">
+                  <img [src]="getThumbImg(promoEvent.discount_product)">
+                  <!-- <div class="relative__item-count">
+                    {{relProd.quantity}}шт.
+                  </div> -->
+                </div>
+                <div class="name">
+                  <p>{{promoEvent.discount_product.name}}</p>
+                  <div class="price">
+                      {{promoEvent.discount_product.price}} &#8381;
+                  </div>                    
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative" *ngIf="promoEvent.discount_product_for_n">
+            <div class="relative__content">
+              <div class="relative__item">
+                <div class="img">
+                  <img [src]="getThumbImg(promoEvent.discount_product_for_n)">
+                  <div class="relative__item-count">
+                    {{promoEvent.discount_product_count}}шт.
+                  </div>
+                </div>
+                <div class="name">
+                  <p>{{promoEvent.discount_product_for_n.name}}</p>
+                  <div class="price">
+                      {{promoEvent.discount_product_for_n.price * promoEvent.discount_product_count}} &#8381;
+                  </div>                    
+                </div>
+              </div>
+            </div>
+          </div>          
+
+          <div class="text">
+            <div class="name">{{promoEvent.name}}</div>
+            <div class="description">{{promoEvent.description}}</div>
+            <div class="relative__sum">
+              <div class="relative__sum-value">&#61; {{getPromoSum(promoEvent)}} &#8381;</div>
+              <div class="btn" (click)="buyRelative(promoEvent)" [ngClass]="{'disable' : getPromoSum(promoEvent) <= 0}">Купить</div>
+            </div>
+          </div>
+          <div class="relative__sum-mobile">
+            <div class="relative__sum-value">&#61; {{getPromoSum(promoEvent)}} &#8381;</div>
+            <div class="btn" (click)="buyRelative(promoEvent)" [ngClass]="{'disable' : getPromoSum(promoEvent) <= 0}">Купить</div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>

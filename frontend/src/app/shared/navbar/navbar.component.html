@@ -1,0 +1,187 @@
+<div class="navbar">
+  <div class="navbar__inner">
+    <div class="navbar__inner-logo" (click)="openPage('')">
+      <img src="/assets/logo-new.jpg">
+    </div>
+    <div class="navbar__inner-menu--mobile">
+      <mat-icon svgIcon="catalog" (click)="menuState = !menuState"></mat-icon>
+      <ul @expandMenu *ngIf="menuState">
+        <mat-accordion displayMode="flat">
+          <mat-expansion-panel class="cat-caption">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                КАТАЛОГ ПРОДУКЦИИ
+              </mat-panel-title>              
+            </mat-expansion-panel-header>
+            <div class="mobile-menu__cat navbar" *ngFor="let category of menuList; trackBy : trackCategory; let last = last">
+              <mat-accordion displayMode="flat">
+                <mat-expansion-panel class="mobile-menu__cat-caption" [ngClass]="{'last' : last}">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      {{category.name}}
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div class="mobile-menu__subcat" *ngFor="let subcat of category.subcats" (click)="openCatalog(category.name, subcat.name)">{{subcat.name}}</div>
+                </mat-expansion-panel>
+              </mat-accordion>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+
+        <!-- <li>
+          <div class="cat-caption" (click)="catalogState = toggleMenu(catalogState)">
+            КАТАЛОГ ПРОДУКЦИИ
+          </div>          
+          <div class="mobile-menu" [@expandPanel]="catalogState" [ngClass]="{'active-menu': catalogState}">
+            <div class="mobile-menu__cat" *ngFor="let category of menuList; trackBy : trackCategory">
+              <div class="mobile-menu__cat-caption" (click)="category.state = toggleSubMenu(category)">{{category.name}}</div>
+              <div class="mobile-menu__cat-content" [@expandPanel]="category.state" [ngClass]="{'active-menu': category.state == 'expanded'}">
+                <div class="mobile-menu__subcat" *ngFor="let subcat of category.subcats" (click)="openCatalog(category.name, subcat.name)">{{subcat.name}}</div>
+              </div>
+            </div>
+          </div>
+        </li> -->
+        <li>
+          <div class="cat-caption" (click)="openPage('care-program')">ПРОГРАММЫ УХОДА</div>
+        </li>
+        <li>
+          <div class="cat-caption" (click)="openPage('comments')">ОТЗЫВЫ</div>
+        </li>
+        <li>
+          <div class="cat-caption" (click)="openPage('info/partners')">ПАРТНЕРСТВО</div>
+        </li>
+        <li>
+          <div class="cat-caption" (click)="openEarning()">ВОЗНАГРАЖДЕНИЕ</div>
+        </li>
+        <li>
+          <div class="cat-caption" (click)="openPage('blog')">БЛОГ</div>
+        </li>
+        <li>
+          <div class="cat-caption profile-login" (click)="account()">
+            <mat-icon svgIcon="account"></mat-icon>Войти в аккаунт
+          </div>
+        </li>
+        <!-- <li>
+          <div class="cat-caption profile-login" (click)="sharePanelState = toggleMenu(sharePanelState)">
+            <mat-icon svgIcon="share"></mat-icon>Поделиться
+          </div>
+          <div class="mobile-menu" [@expandPanel]="sharePanelState" [ngClass]="{'active-menu': sharePanelState}" style="width: 100%;">
+            <div class="social">
+              <div class="social__item share">
+                <div class="share__link">
+                  <div class="share__link-text">
+                    {{(loggedIn)? user.ref_link : 'https://dari-cosmetics.ru'}}
+                  </div>
+                  <div class="share__link-icon" (click)="copyClipboard()">
+                    <mat-icon svgIcon="copy" class="copyIcon"></mat-icon>
+                  </div>                    
+                </div>
+              </div>
+              <div class="social__links">
+                <div class="social__item vk" (click)="share('vk')">
+                  <mat-icon svgIcon="vk"></mat-icon>
+                </div>
+                <div class="social__item fb" (click)="share('fb')">
+                  <mat-icon svgIcon="fb"></mat-icon>
+                </div>
+                <div class="social__item ok" (click)="share('ok')">
+                  <mat-icon svgIcon="ok"></mat-icon>
+                </div>
+                <div class="social__item twitter" (click)="share('twitter')">
+                  <mat-icon svgIcon="twitter"></mat-icon>
+                </div>                
+              </div>
+            </div>
+          </div>
+        </li> -->
+        <li>
+          <div class="cat-caption link">
+            <ol>
+              <li class="shipping" (click)="openPage('info/shipping')"><mat-icon svgIcon="shipping"></mat-icon> Доставка и оплата</li>
+              <!-- <li>Помощь 24/7</li> -->
+              <li (click)="openPage('info/partners')">Сотрудничество</li>
+              <li (click)="openPage('info/about')">О нас</li>
+              <li (click)="openPage('info/contacts')">Контакты</li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <div class="cat-caption contacts">
+            <div class="phone">8 800 700 8858</div>
+            <div class="social-links">
+              <div class="social-links__item instagram" (click)="openInst()">
+                <mat-icon svgIcon="instagram"></mat-icon>
+              </div>
+              <div class="social-links__item vk" (click)="openVK()">
+                <mat-icon svgIcon="vk"></mat-icon>
+              </div>
+              <div class="social-links__item fb" (click)="openFB()">
+                <mat-icon svgIcon="fb"></mat-icon>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <!-- <mat-icon svgIcon="search"></mat-icon> -->
+      <div class="navbar__inner-search" [ngClass]="{'active': activeSearch}">
+        <input type="text" [(ngModel)]="searchProduct" placeholder="Поиск по товарам">
+        <mat-icon svgIcon="search" (click)="mobileSearch()"></mat-icon>
+      </div>
+    </div>
+    <div class="navbar__inner-menu">
+      <ul>
+        <li (mouseenter)="showMenuPanel = true;" style="position: relative;" (click)="openPage('catalog')">
+          <mat-icon svgIcon="catalog" style="margin-right: 20px;"></mat-icon> Каталог
+          <div class="menu__arrow" [ngClass]="{'active-menu': showMenuPanel}"></div>
+        </li>
+        <!-- <mat-menu #menu="matMenu">
+          <ng-template matMenuContent> -->
+        <div class="menu" (mouseleave)="showMenuPanel = false;" [ngClass]="{'active-menu': showMenuPanel}">
+          <div class="menu__cat" *ngFor="let category of menuList">
+            <div class="menu__cat-caption">{{category.name}}</div>
+            <div class="menu__cat-content">
+              <div class="menu__subcat" *ngFor="let subcat of category.subcats" (click)="openCatalog(category.name, subcat.name)">{{subcat.name}}</div>
+            </div>
+          </div>              
+        </div>
+          <!-- </ng-template>          
+        </mat-menu> -->
+        <li (click)="openPage('care-program')" (mouseenter)="showMenuPanel = false;">Программы</li>
+        <li (click)="openPage('comments')" (mouseenter)="showMenuPanel = false;">Отзывы</li>
+        <li (click)="openPage('info/partners')" (mouseenter)="showMenuPanel = false;">Партнерство</li>
+        <li (click)="openPage('blog')" (mouseenter)="showMenuPanel = false;">Блог</li>        
+        <li style="margin-left: auto; margin-right: 0;" (mouseenter)="showMenuPanel = false;">
+          <div class="navbar__inner-search">
+            <input type="text" [(ngModel)]="searchProduct" placeholder="Поиск по товарам" (keyup.enter)="search()">
+            <mat-icon svgIcon="search" (click)="search()"></mat-icon>
+          </div>          
+        </li>
+      </ul>
+    </div>
+    <div class="navbar__inner-cart" (click)="openPage('cart')" (mouseenter)="showCartPreview = true">
+      <div class="navbar__inner-cart--count" *ngIf="cartCount">{{cartCount}}</div>
+      <mat-icon svgIcon="cart"></mat-icon>
+      <cart-preview *ngIf="cartCount && showCartPreview" (mouseleave)="showCartPreview = false"></cart-preview>
+    </div>
+    <div (click)="account()" class="navbar__inner-account" *ngIf="!loggedIn">
+      <mat-icon svgIcon="account"></mat-icon>
+      <div style="width: min-content;">Войти в аккаунт</div>      
+    </div>
+    <div (click)="account()" class="navbar__inner-account" *ngIf="loggedIn" (mouseenter)="showProfileMenu = true">
+      <mat-icon svgIcon="profile"></mat-icon>
+      <div style="width: min-content; margin-left: 10px; text-align: left;" *ngIf="user">
+        {{user.first_name}}
+        <br>
+        <span *ngIf="!isManager"><b>{{user.available_bonus_amount}}</b> бонусов</span>
+      </div>
+      <div class="navbar__inner-account--menu" *ngIf="showProfileMenu" (mouseleave)="showProfileMenu = false">
+        <ul>
+          <li>Личный кабинет</li>
+          <!-- <li>Мои заказы</li>
+          <li>Партнерство</li> -->
+        </ul>
+        <div class="btn btn__logout" (click)="logout()">Выйти</div>
+      </div>
+    </div>
+  </div>
+</div>

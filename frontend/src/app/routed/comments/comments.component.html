@@ -1,0 +1,28 @@
+<div class="comments">
+  <breadcrumbs [list]="[{text: 'Главная', link: '/'}, {text: 'Отзывы', link: null}]"></breadcrumbs>
+  <div class="common-caption">
+    <h3 style="padding-bottom: 26px; text-transform: unset;">
+      Отзывы наших покупателей
+    </h3>
+    <hr>
+  </div>
+  <div class="comments__list comments__list-all">
+    <div class="comments__item" *ngFor="let item of comments">
+      <div class="comments__item-img">
+        <img [src]="getCommentImg(item)">
+        <div class="mobile">
+          <p class="comments__item-caption">{{getUserName(item) | initials}}</p>
+          <!-- <p class="comments__item-subcaption">@{{item.user.username}}</p> -->
+        </div>
+      </div>          
+      <div class="comments__item-content">
+        <p class="comments__item-caption">{{getUserName(item) | initials}}</p>
+        <!-- <p class="comments__item-subcaption">@{{item.user.username}}</p> -->
+        <div class="comments__item-text">
+          {{item.text}}
+          <div class="videolink" *ngIf="item.video_link" (click)="openVideo(item.video_link)">Видео-отзыв</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

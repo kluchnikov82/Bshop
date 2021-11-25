@@ -1,0 +1,61 @@
+<div class="cart-preview">
+  <div class="caption">В корзине: {{getCartCount()}}</div>
+  <div class="cart-preview__inner">
+    <div (mouseenter)="toggleOuterScroll('block')" (mouseleave)="toggleOuterScroll('unblock')">
+    <!-- <perfect-scrollbar > -->
+      <div class="cart-preview__item" *ngFor="let product of cartProducts">
+        <div class="img">
+          <img [src]="getProductData(product, 'primary_image')">
+        </div>
+        <div class="description">
+          <p class="item-name">
+            {{product.name}}
+          </p>
+          <p class="item-eng">{{product.english_name}}</p>
+          <p class="item-weight">{{product.weight}} г</p>
+          <div class="item-price">
+            <span class="item-count">{{getProductData(product, 'quantity')}} шт.</span>
+            <span class="item-priceValue">{{product.price}} &#8381;</span>
+          </div>
+        </div>
+      </div>
+      <div class="cart-preview__item" *ngFor="let prog of cartKits">
+        <div class="img">
+          <img [src]="getProgramData(prog, 'image')">
+        </div>
+        <div class="description">
+          <p class="item-name">
+            Программа {{prog.name}}
+          </p>
+          <p class="item-weight"></p>
+          <div class="item-price">
+            <span class="item-count">{{getProductData(prog, 'quantity')}} шт.</span>
+            <span class="item-priceValue">{{prog.price}} &#8381;</span>
+          </div>
+        </div>
+      </div>
+      <div class="cart-preview__item" *ngFor="let ev of cartEvents">
+        <div class="img">
+          <img [src]="getEventImg(ev)">
+        </div>
+        <div class="description">
+          <p class="item-name">
+            Акция {{ev.event_name}}
+          </p>
+          <p class="item-weight"></p>
+          <div class="item-price">
+            <span class="item-count">{{ev.quantity}} шт.</span>
+            <span class="item-priceValue">{{getEventPrice(ev)}} &#8381;</span>
+          </div>
+        </div>
+      </div>
+    <!-- </perfect-scrollbar> -->
+    </div>
+  </div>
+  <hr>
+  <div class="cart-preview__sum">
+    <span>Итого:</span>
+    <span class="sumValue">{{getCartSum()}} &#8381;</span>
+  </div>
+  <div class="btn cart-preview__btn">В корзину</div>
+</div>

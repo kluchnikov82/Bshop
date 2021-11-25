@@ -1,0 +1,301 @@
+<div class="confirm-order">
+  <breadcrumbs [list]="bClist"></breadcrumbs>
+  <div class="common-caption common-caption__cart">
+    <h3 style="padding-bottom: 26px; text-transform: unset;">
+      Оформление заказа
+    </h3>
+    <hr>
+  </div>
+  <div class="not-login" *ngIf="!loggedIn">
+    Уже есть аккаунт? <span (click)="login()">Войти <mat-icon svgIcon="shape"></mat-icon></span>
+  </div>
+  <div class="confirm-order__inner">
+    <div class="row">
+      <div class="first-step" [ngClass]="(firstStep)? 'active' : 'non-active'">
+        <div class="caption">
+          <div class="icon" [ngClass]="(!firstStep && userDataForm.valid)? 'valid' : ''">
+            <mat-icon svgIcon="profile"></mat-icon>
+          </div>
+          <div class="value">
+            ШАГ 1. Личные данные
+          </div>        
+        </div>
+        <div class="edit" *ngIf="!firstStep" (click)="firstStep = true">Редактировать данные</div>
+        <form [formGroup]="userDataForm" [ngClass]="(firstStep)? '' : 'not-expanded'">
+          <div class="sub">* Обязательные поля для заполнения</div>
+          <div class="form-item form-item-20" *ngIf="isPartner">
+            <div class="input-group own-order">
+              <div class="delivery">
+                <div class="delivery__item">
+                  <div class="check" (click)="ownOrder = !ownOrder" [ngClass]="{'active': ownOrder}"></div>
+                  <div class="name">Личный заказ</div>
+                </div>
+              </div>            
+            </div>
+          </div>
+          <div class="form-item">
+            <div class="label">Ваше ФИО*</div>
+            <div class="input" [ngClass]="errorClass.name">
+              <input required
+                  type="text" 
+                  formControlName="fioControl"
+                  (blur)="setClass('name')"
+                  (focus)="errorClass.name = ''"
+                  placeholder="Ваше ФИО"
+                  fioMask
+                  />
+            </div>
+            <div class="form-item__error" *ngIf="errorClass.name && (errorClass.name != 'valid')">ФИО указано некорректно</div>
+          </div>
+          <div class="form-item">
+            <div class="label">Ваш телефон*</div>
+            <div class="input" [ngClass]="errorClass.phone">
+              <input required
+                type="phone"
+                inputmode="tel"
+                formControlName="phoneControl"
+                phoneMask
+                (blur)="setClass('phone')"
+                (focus)="checkPhone()"
+                placeholder="Ваш телефон">
+            </div>
+            <div class="form-item__error" *ngIf="errorClass.phone && (errorClass.phone != 'valid')">Телефон указан некорректно</div>
+          </div>
+          <div class="form-item">
+            <div class="label">E-mail*</div>
+            <div class="input" [ngClass]="errorClass.email">
+              <input required
+                type="email"
+                inputmode="email"
+                formControlName="emailControl"
+                (blur)="setClass('email')"
+                (focus)="errorClass.email = ''"
+                placeholder="E-mail">
+            </div>
+            <div class="form-item__error" *ngIf="errorClass.email && (errorClass.email != 'valid')">E-mail указан некорректно</div>
+          </div>
+          <div class="form-item">
+            <div class="label">Комментарий</div>
+            <div class="input">
+              <input type="text" formControlName="memoControl" placeholder="Комментарий к заказу">
+            </div>
+          </div>          
+        </form>
+        <div class="btn btn__next" (click)="nextStep()" *ngIf="firstStep">Следующий шаг</div>
+      </div>
+      <div class="second-step" [ngClass]="(!firstStep)? 'active' : 'non-active'">
+        <div class="caption">
+          <div class="icon">
+            <mat-icon svgIcon="shipping"></mat-icon>
+          </div>
+          <div class="value">ШАГ 2. Способы доставки</div>
+        </div>
+          
+        <form class="delivery-form" [formGroup]="deliveryForm" [ngClass]="(firstStep)? 'not-expanded' : ''" [style.height]="getDeliveryFormHeight()">
+          <h3>Адрес</h3>
+          <div class="form-item" *ngIf="hasOwnAddress">
+            <div class="label">Выбрать свой адрес</div>
+            <div class="input">
+              <mat-select [(value)]="selectedAddress" placeholder="Выбрать свой адрес" (selectionChange)="selectOwnAddress()">
+                <mat-option *ngFor="let adr of user.addresses" [value]="adr.id">
+                  {{getFullAddress(adr)}}
+                </mat-option>
+              </mat-select>
+              <mat-icon svgIcon="close" *ngIf="selectedAddress" (click)="clearOwnAddress()"></mat-icon>
+            </div>            
+          </div>
+          <div class="form-item form-item__first" *ngIf="!selectedAddress">
+            <div class="label">Регион/район*</div>
+            <div class="input">
+              <input type="text"
+                    formControlName="regionControl" 
+                    [matAutocomplete]="regionAC"
+                    (blur)="checkAutocomplete(deliveryForm.get('regionControl'), regionOptions)"
+                    aria-label="Region" 
+                    placeholder="Регион/район*">
+              <mat-autocomplete 
+                #regionAC="matAutocomplete" 
+                autoActiveFirstOption 
+                (optionSelected)="selectRegion($event)" 
+                [displayWith]="displayRegion">
+                <mat-option *ngFor="let option of regionOptions" [value]="option">{{option.value}}</mat-option>
+              </mat-autocomplete>                  
+            </div>          
+          </div>
+
+          <div class="form-item form-item-20" *ngIf="!selectedAddress">
+            <div class="label">Город/нас.пункт*</div>
+            <div class="input" [ngClass]="{'invalid': isControlInvalid('cityControl')}">
+              <input type="text"
+                    formControlName="cityControl" 
+                    [matAutocomplete]="cityAC" 
+                    (blur)="checkAutocomplete(deliveryForm.get('cityControl'), cityOptions)"
+                    aria-label="City" 
+                    placeholder="Город/нас.пункт*">
+              <mat-autocomplete 
+                #cityAC="matAutocomplete" 
+                autoActiveFirstOption 
+                (optionSelected)="selectCity($event)" 
+                [displayWith]="displayCity">
+                <mat-option *ngFor="let option of cityOptions" [value]="option">{{displayCity(option)}}</mat-option>
+              </mat-autocomplete>                
+            </div>          
+          </div>
+
+          <div class="form-item form-item-20" *ngIf="!selectedAddress">
+            <div class="label">Улица</div>
+            <div class="input">
+              <input type="text"
+                    formControlName="streetControl" 
+                    [matAutocomplete]="streetAC" 
+                    (blur)="checkAutocomplete(deliveryForm.get('streetControl'), streetOptions)"
+                    aria-label="Street" 
+                    placeholder="Улица">
+              <mat-autocomplete 
+                #streetAC="matAutocomplete" 
+                autoActiveFirstOption
+                (optionSelected)="selectStreet($event)"
+                [displayWith]="displayStreet">
+                <mat-option *ngFor="let option of streetOptions" [value]="option">{{displayStreet(option)}}</mat-option>
+              </mat-autocomplete>                
+            </div>          
+          </div>
+
+          <div class="form-item form-item-20" *ngIf="!selectedAddress">
+            <div class="label">Дом</div>
+              <div class="input-group input-group__flat">
+                <div class="input input-house" [ngClass]="{'invalid': isControlInvalid('houseControl')}">
+                  <input type="text"
+                        formControlName="houseControl" 
+                        [matAutocomplete]="houseAC"
+                        aria-label="House" 
+                        placeholder="Дом">
+                  <mat-autocomplete 
+                    #houseAC="matAutocomplete" 
+                    autoActiveFirstOption
+                    (optionSelected)="selectHouse($event)"
+                    [displayWith]="displayHouse">
+                    <mat-option *ngFor="let option of houseOptions" [value]="option">{{displayHouse(option)}}</mat-option>
+                  </mat-autocomplete>                    
+                </div>
+                <div class="label label-flat">Кв</div>
+                <div class="input input-flat">
+                  <input type="text" 
+                        formControlName="flatControl" 
+                        placeholder="Кв">
+                </div>                   
+              </div>          
+          </div>
+          
+          <div class="form-item" style="align-items: flex-start;">
+            <div class="label">Доставка</div>
+            <preloader *ngIf="loadShipping" style="margin: 0 auto;"></preloader>
+            <div class="input-group input-group__delivery" *ngIf="!loadShipping">
+              <div class="delivery" *ngFor="let type of shippingMethods">
+                <div class="delivery__item" *ngIf="type.cost || (type.id == 0 && getCartSum(true) >= 4000) || (type.id == 7)" (click)="chooseShippingMethod(type)">
+                  <div class="check" (click)="chooseShippingMethod(type)" [ngClass]="{'active': type.selected}"></div>
+                  <div class="name">{{type.name}}</div>                    
+                  <div class="cost"> - {{type.cost}} &#8381;</div>
+                </div>
+              </div>
+              <div class="delivery__points" *ngIf="dpList.length && showDPList">
+                <mat-select [(value)]="selectedDP" placeholder="Выберите ПВЗ">
+                  <mat-option *ngFor="let dp of dpList" [value]="dp.code">
+                    {{dp.city}}, {{dp.address}}
+                  </mat-option>
+                </mat-select>
+              </div>              
+            </div>
+          </div>
+        </form>
+
+      </div>
+
+      <div class="agree" *ngIf="!firstStep">
+        <div class="text" (click)="openDoc()">Я даю свое согласие на обработку персональных данных</div>
+        <div class="check" (click)="agree = !agree" [ngClass]="(agree)? 'active' : ''"></div>        
+      </div>
+
+      <div class="btns confirm" *ngIf="!firstStep">
+        <div class="btn btn__saveorder" [ngClass]="{'disable': !agree}"  (click)="saveOrder()">Оформить заказ</div>
+      </div>
+    </div>
+
+    <div class="cart-info">
+      <div class="caption">
+        Ваш заказ
+        <div class="btn btn__changeorder" (click)="openCart()">Изменить</div>
+      </div>
+      <div class="product-list">
+      <!-- <perfect-scrollbar > -->
+        <div class="product-item" *ngFor="let prod of cartEvents">
+          <div class="img">
+            <img [src]="getEventImg(prod)" >
+          </div>
+          <div class="info">
+            <div class="name">Акция {{prod.event_name}}</div>
+            <div class="count">
+              <div class="value__count">{{prod.quantity}}</div>
+              <div class="price">{{getEventPrice(prod) | number : '1.0-0' : 'ru'}} &#8381;</div>
+            </div>
+          </div>
+        </div>
+        <div class="product-item" *ngFor="let prod of products">
+          <div class="img">
+            <img [src]="getProductData(prod,'primary_image')" >
+          </div>
+          <div class="info">
+            <div class="name">{{prod.name}}</div>
+            <div class="sub">{{prod.english_name}}</div>
+            <div class="count">
+              <div class="value__count">{{getProductData(prod,'quantity')}}</div>
+              <div class="price">{{prod.price | number : '1.0-0' : 'ru'}} &#8381;</div>
+            </div>
+          </div>
+        </div>
+        <div class="product-item" *ngFor="let prog of kits">
+          <div class="img">
+            <img [src]="getProgramData(prog, 'image')">
+          </div>
+          <div class="info">
+            <div class="name">Программа {{prog.name}}</div>
+            <div class="count">
+              <div class="value__count">{{getProductData(prog,'quantity')}}</div>
+              <div class="price">{{prog.price | number : '1.0-0' : 'ru'}} &#8381;</div>
+            </div>
+          </div>
+        </div>
+      <!-- </perfect-scrollbar> -->
+      </div>
+      <div class="cart-sum">
+        <div class="text">Итого:</div>
+        <div class="sum">{{getCartSum() | number : '1.2-2' : 'ru'}} &#8381;</div>
+      </div>
+      <div class="cart-sum" *ngIf="orderHasGift">
+        <div class="text">
+          <b>Подарок к заказу: </b>{{giftText}}
+        </div>
+      </div>
+      <div class="cart-sum" *ngIf="ownOrder">
+        <div class="text">Персональная скидка ({{(user.current_discount * 100)}}%)</div>
+        <div class="sum">{{(getCartSum() * user.current_discount) | number : '1.2-2' : 'ru'}} &#8381;</div>
+      </div>
+      <div class="cart-sum" *ngIf="ownOrder">
+        <div class="text">Итого:</div>
+        <div class="sum">{{(getCartSum() * (1 - user.current_discount)) | number : '1.2-2' : 'ru'}} &#8381;</div>
+      </div>
+      <div class="cart-sum" *ngIf="promoOrder">
+        <div class="text">Скидка ({{(promoDiscount * 100)}}%)</div>
+        <div class="sum">{{(getCartSum() * promoDiscount) | number : '1.2-2' : 'ru'}} &#8381;</div>
+      </div>
+      <div class="cart-sum" *ngIf="promoOrder">
+        <div class="text">Итого:</div>
+        <div class="sum">{{(getCartSum() * (1 - promoDiscount)) | number : '1.2-2' : 'ru'}} &#8381;</div>
+      </div>
+      <div class="cart-sum" *ngIf="refPromoOrder">
+        <div class="text">Кэшбэк (5%)</div>
+        <div class="sum">{{(getCartSum() * 0.05) | number : '1.2-2' : 'ru'}} &#8381;</div>
+      </div>
+    </div>    
+  </div>
+</div>

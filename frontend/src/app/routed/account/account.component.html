@@ -1,0 +1,657 @@
+<div class="account">
+  <breadcrumbs [list]="bClist"></breadcrumbs>
+  <div class="common-caption common-caption__account">
+    <h3 style="padding-bottom: 10px;">
+      Личный&nbsp;кабинет
+    </h3>
+    <hr>
+  </div>
+  <div class="account__caption">
+    <div class="mobile-link" (click)="changeTab('personal')">
+      <mat-icon svgIcon="back"></mat-icon>Главная
+    </div>
+    Здравствуйте, {{user.first_name}}, добро пожаловать в Ваш личный кабинет.
+  </div>
+  <div class="account__tabs" *ngIf="user">
+    <div class="account__tabs-item account__tabs-item--main" (click)="changeTab('personal')" [ngClass]="{'active': activeTab == 'personal'}">Главная</div>
+    <div class="account__tabs-item" (click)="changeTab('myEarns')" [ngClass]="{'active': activeTab == 'myEarns'}" *ngIf="!isManager">Вознаграждение</div>
+    <div class="account__tabs-item" (click)="changeTab('myOrders')" [ngClass]="{'active': activeTab == 'myOrders'}">Мои заказы</div>
+    <div class="account__tabs-item" (click)="changeTab('partners')" [ngClass]="{'active': activeTab == 'partners'}" *ngIf="!isManager">Партнерство</div>
+    <div class="account__tabs-item" (click)="changeTab('referals')" [ngClass]="{'active': activeTab == 'referals'}">Мои рефералы</div>
+  </div>
+  <div class="account__content" *ngIf="(activeTab == 'personal')" @animateToggle>
+    <div class="account__info">
+      <div class="account__block account__block-profile">
+        <div class="caption">
+          <div class="caption-icon">
+            <mat-icon svgIcon="profile"></mat-icon>
+          </div>
+          <div class="caption-text">Личные данные</div>
+          <div class="avatar">
+            <img [src]="getUserImg()">
+            <label class="avatar__overlay" for="img_upload">
+              Загрузить
+              <input type="file" (change)="addImg($event)" id="img_upload" style="display: none;" accept="image/*">
+            </label>
+          </div>
+        </div>
+        <div class="content">
+          <div class="name">{{user.first_name}} {{user.last_name}}</div>
+          <div class="info">
+            <p><b>E-mail:</b> {{user.email}}</p>
+            <p><b>Тел.:</b> {{user.phone}}</p>
+            <p><b>Дата рождения:</b> {{(user.phys_profile)? (user.phys_profile.birth_date | date : 'dd.MM.yyyy') : ''}}</p>
+            <p><b>ID клиента:</b> {{user.ref_id}}</p>
+            <p class="link" (click)="showProfile()">Изменить личные данные</p>
+            <!-- <p class="link" (click)="changeTab('profile')">Изменить пароль</p> -->
+          </div>
+        </div>
+      </div>
+      <div class="account__block">
+        <div class="caption">
+          <div class="caption-icon">
+            <mat-icon svgIcon="point"></mat-icon>
+          </div>
+          <div class="caption-text">Мои адреса</div>
+        </div>
+        <div class="content content__address" *ngIf="user.addresses">
+          <span *ngIf="!user.addresses.length">Пока у Вас нет адресов</span>
+          <div class="content__address-list" *ngIf="user.addresses.length">
+            <div class="content__address-item" *ngFor="let adr of user.addresses">
+              {{userAddress(adr)}}
+            </div>
+          </div>
+          <div class="btns" style="margin-top: 40px;" #blockProfile>
+            <div class="btn" (click)="addAddress()">Добавить адрес</div>
+          </div>
+        </div>
+      </div>
+      <div class="account__block" *ngIf="showChangeProfileBlock">
+        <div class="caption">
+          <div class="caption-icon">
+            <mat-icon svgIcon="profile"></mat-icon>
+          </div>
+          <div class="caption-text">Личные данные</div>
+        </div>
+        <div class="content profile profile-col">
+          <div class="content__row" [ngClass]="{'disable' : !editMode}">
+            <div class="username">
+              <div class="label">Ф.И.</div>
+              <div class="name">
+                <input type="text" [(ngModel)]="fullName">
+              </div>                  
+            </div>
+            <div class="usermail">
+              <div class="label">E-mail</div>
+              <div class="name">
+                <input type="email" [(ngModel)]="user.email">
+              </div>                   
+            </div>               
+          </div>
+
+          <div class="content__row" [ngClass]="{'disable' : !editMode}">
+            <div class="userphone">
+              <div class="label">Телефон</div>
+              <div class="name">
+                <input type="text" [(ngModel)]="user.phone" phoneMask>
+              </div>
+            </div>
+            <div class="userdate">
+              <div class="label">Дата рождения</div>
+              <div class="name">
+                <input [matDatepicker]="myDatepicker" [(ngModel)]="birthdate" (click)="myDatepicker.open()" autocomplete="off" [disabled]="!editMode">
+                <mat-datepicker #myDatepicker></mat-datepicker>
+                <mat-datepicker-toggle [for]="myDatepicker" *ngIf="editMode"></mat-datepicker-toggle>
+                <!-- <input type="date"> -->
+              </div>
+            </div>
+          </div>
+          <div class="btns" style="justify-content: flex-end;">
+            <div class="btn" (click)="changeProfile()">{{(editMode)? 'Сохранить' : 'Редактировать'}}</div>
+          </div>              
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="account__content" *ngIf="(activeTab == 'myEarns')" @animateToggle>
+    <div class="account__info">
+      <div class="account__block">
+        <div class="caption caption-right--mobile" *ngIf="showReflink">
+          <div class="caption-icon">
+            <mat-icon svgIcon="share" style="width: 12px; height: 12px;"></mat-icon>
+          </div>
+          <div class="caption-text" id="refLink" style="max-width: initial;">
+            <p>Ваш ПРОМОКОД</p>
+            <div class="social">
+              <div class="social__item share">
+                <div class="share__link">
+                  <div class="share__link-text">
+                    {{user.promo}}
+                  </div>
+                  <div class="share__link-icon" (click)="copyClipboard()">
+                    <mat-icon svgIcon="copy" class="copyIcon"></mat-icon>
+                  </div>                    
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="caption caption-right--mobile" *ngIf="!showReflink">
+          Совершая покупки на сумму свыше 2000 рублей, у Вас появляется ПРОМОКОД, которым Вы можете поделиться со своими друзьями и близкими
+        </div>
+      </div>
+      <div class="account__block account__block-earn" #blockEarn>
+        <div class="caption">
+          <div class="caption-icon">
+            <mat-icon svgIcon="gift"></mat-icon>
+          </div>
+          <div class="caption-text">
+            Вознаграждение
+          </div>
+        </div>
+        <div class="content">
+          <ul>
+            <li>Совершайте покупки и получайте кэшбек 5% от своих заказов.</li>
+            <li>Делитесь реферальной ссылкой или ПРОМОКОДОМ с друзьями и близкими, и получайте вознаграждение с их покупок 5%.</li>
+            <li>Когда покупатели используют вашу реферальную ссылку или ПРОМОКОД для совершения покупок, то они так же получают вознаграждение (кэшбек) 5%.</li>
+            <li>Кэшбек вы можете использовать, оплатив покупку на сайте до 50% от суммы вашего заказа.</li>
+            <li>Кэшбек начисляется через две недели после оплаты покупки.</li>
+          </ul>        
+        </div>
+      </div>
+      <div class="account__block">
+          <div class="caption">
+            <div class="caption-icon">
+              <mat-icon svgIcon="gift"></mat-icon>
+            </div>
+            <div class="caption-text caption-text-left">Мой баланс</div>
+            <div class="caption caption-right" *ngIf="showReflink">
+              <div class="caption-icon">
+                <mat-icon svgIcon="share" style="width: 12px; height: 12px;"></mat-icon>
+              </div>
+              <div class="caption-text">
+                <p>Ваш ПРОМОКОД</p>
+                <div class="social">
+                  <div class="social__item share">
+                    <div class="share__link">
+                      <div class="share__link-text">
+                        {{user.promo}}
+                      </div>
+                      <div class="share__link-icon" (click)="copyClipboard()">
+                        <mat-icon svgIcon="copy" class="copyIcon"></mat-icon>
+                      </div>                    
+                    </div>
+                  </div>
+                </div>
+                <!-- <p>
+                  <span (click)="copyClipboard()">{{user.ref_link}}</span>
+                </p> -->
+              </div>
+            </div>
+            <div class="caption caption-right" *ngIf="!showReflink">
+              Совершая покупки на сумму свыше 2000 рублей, у Вас появляется реферальная ссылка, которой Вы можете поделиться со своими друзьями и близкими
+            </div>            
+          </div>
+
+        <div class="content content-right">
+          <div class="cashback">
+            <p class="placeholder" *ngIf="isPartner">Бонусный счет</p>
+            <p class="value">{{(user.total_bonus_payments - user.total_sale_amount).toLocaleString('ru')}} &#8381; <span class="btn" (click)="bonusToBalance()" style="position: relative; left: 30px;" *ngIf="isPartner">Вывести</span></p>
+            <p class="placeholder placeholder-border" *ngIf="!isPartner">Кэшбэк с личных покупок</p>
+            <p class="value" *ngIf="!isPartner">{{(user.total_sale_amount).toLocaleString('ru')}} &#8381;</p>
+            <p class="placeholder" *ngIf="!isPartner">По партнерской программе</p>
+            <p class="link mobile" (click)="showPartnersInfo()" *ngIf="!isPartner">Подробнее о партнерстве</p>
+            <p class="placeholder" *ngIf="isPartner">Депозит</p>
+            <p class="value" *ngIf="isPartner">{{(user.balance).toLocaleString('ru')}} &#8381;<span class="btn" (click)="addDepo()" *ngIf="isPartner" style="position: relative; left: 30px;">Пополнить</span></p>
+          </div>
+          <div class="cashback-value">
+            <div class="inner">
+              <div class="inner__item">
+                <p>{{(isPartner)? 'Персональная скидка:' : 'Кэшбэк'}}</p>
+                <p class="cashback-value__item">{{(user.current_discount)? (user.current_discount | percent) : '5'}}%</p>
+              </div>
+              <div class="inner__item" *ngIf="!isPartner">
+                <p>Общая сумма доступных бонусов:</p>
+                <p class="cashback-value__item">{{(user.available_bonus_amount).toLocaleString('ru')}}&#8381;</p>
+                <p class="placeholder placeholder__normal"
+                    *ngIf="lastOrderDate && (user.bonus_balance > user.available_bonus_amount)">
+                    (бонусов неактивно - {{(user.bonus_balance - user.available_bonus_amount).toLocaleString('ru')}}&#8381;)
+                    <mat-icon (click)="showBonusHistory()">info</mat-icon>
+                </p>
+              </div>               
+              <div class="inner__item" *ngIf="isPartner">
+                <p>До повышения скидки осталось:</p>
+                <p class="cashback-value__item">{{user.next_target.toLocaleString('ru')}}&#8381;</p>
+                <div class="progress">
+                  <div class="progress-start">0%</div>
+                  <div class="progress-done" [style.width]="percentDone">
+                    <div class="progress-current">{{(user.current_discount * 100)}}%</div>
+                  </div>
+                  <div class="progress-remain" [style.width]="percentRemain"></div>
+                  <div class="progress-end">50%</div>
+                </div>
+              </div> 
+            </div>
+          </div>
+        </div>
+      </div>      
+    </div>
+
+  </div>
+
+  <div class="account__content" *ngIf="(activeTab == 'myOrders')" @animateToggle>
+    <div class="account__info">
+      <div class="account__block account__block-orders" *ngIf="ordersArray">
+        <div class="caption">
+          <div class="caption-icon">
+            <mat-icon svgIcon="shopCart"></mat-icon>
+          </div>
+          <div class="caption-text">История заказов (всего: {{countOrders}})</div>
+        </div>
+        <div class="caption" *ngIf="isManager">
+          <div class="caption-icon" style="font-size: 20px; color: white;">
+            &#8381;
+          </div>
+          <div class="caption-sum">Сумма оплаченных заказов: <span>{{getManagerSum() | number : '1.2-2' : 'ru'}} &#8381;</span></div>
+          <div class="caption-sum">
+            <mat-select [(value)]="selectedPeriod" placeholder="Выберите месяц" (selectionChange)="changeManagerSum()">
+              <mat-option *ngFor="let p of periodList" [value]="p">
+                {{p.visibleValue}}
+              </mat-option>
+            </mat-select>
+          </div>
+        </div>
+        <div class="content content__orders">
+          <table class="orders">
+            <thead>
+              <tr>
+                <th>Номер заказа</th>
+                <th>
+                  Дата и время заказа
+                  <!-- <mat-icon svgIcon="sortUp" (click)="sort(ordersArray, 'created','up')"></mat-icon>
+                  <mat-icon svgIcon="sortDown" (click)="sort(ordersArray, 'created', 'down')"></mat-icon> -->
+                </th>
+                <th>
+                  Статус
+                  <!-- <mat-icon svgIcon="sortUp" (click)="sort(ordersArray, 'payed','up')"></mat-icon>
+                  <mat-icon svgIcon="sortDown" (click)="sort(ordersArray, 'payed', 'down')"></mat-icon> -->
+                </th>
+                <th>Сумма, &#8381;</th>
+                <th>Начислено бонусов</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let order of ordersArray; trackBy : orderTrack">
+                <tr>
+                  <td class="order-link" (click)="openOrder(order.id)">{{order.order_no}}</td>
+                  <td>{{order.created | dateFormat}}</td>
+                  <td>
+                    <mat-icon svgIcon="greenCheck" *ngIf="order.payed"></mat-icon>                    
+                    <mat-icon svgIcon="redCross" *ngIf="!order.payed"></mat-icon>                      
+                    {{(order.payed)? 'Оплачен' : 'Не оплачен'}}
+                  </td>
+                  <td>{{(order.total_amount + order.shipping_amount) | number : '1.0-0' : 'ru'}} &#8381;</td>
+                  <td>{{order.bonus}}</td>
+                  <td>
+                    <!-- <div class="btn" (click)="showOrderDetails(order)">Детали</div> -->
+                    <div class="btn" (click)="editOrder(order)" *ngIf="!order.payed && !order.readonly">Изменить</div>
+                  </td>
+                </tr>
+                <tr *ngIf="(order.order_products.length || order.order_kits.length) && order.showDetails">
+                  <td colspan="5">
+                    <div class="order-product" *ngFor="let prod of order.order_products">
+                      <div class="img">
+                        <img [src]="prod.primary_image">
+                      </div>
+                      <div class="name">
+                        {{prod.name}}
+                      </div>
+                      <div class="count">
+                        {{prod.quantity}} шт.
+                      </div>
+                      <div class="price">
+                        {{prod.price | number : '1.0-0' : 'ru'}} &#8381;
+                      </div>
+                    </div>
+                    <div class="order-product" *ngFor="let kit of order.order_kits">
+                      <div class="img">
+                        <img [src]="kit.primary_image">
+                      </div>
+                      <div class="count">
+                        {{kit.quantity}} шт.
+                      </div>
+                      <div class="price">
+                        {{kit.price | number : '1.0-0' : 'ru'}} &#8381;
+                      </div>
+                    </div>                    
+                    <!-- <div class="btns">
+                      <div class="btn btn__repeat" (click)="repeatOrder(order)">Повторить заказ</div>
+                    </div> -->
+                  </td>
+                </tr>                
+              </ng-container>
+            </tbody>
+          </table>
+          <div class="account__block-orders--mobile">
+            <div class="order-item" *ngFor="let ord of ordersArray">
+              <div class="order-caption">
+                Номер заказа: <span class="order-link" (click)="openOrder(ord.id)">{{ord.order_no}}</span>
+              </div>
+              <div class="order-info">
+                <p>
+                  Статус: 
+                  <mat-icon svgIcon="greenCheck" *ngIf="ord.payed"></mat-icon>                    
+                  <mat-icon svgIcon="redCross" *ngIf="!ord.payed"></mat-icon>                      
+                  <span>{{(ord.payed)? 'Оплачен' : 'Не оплачен'}}</span>
+                </p>
+                <p>
+                  Дата заказа: <span>{{ord.created | dateFormat}}</span>
+                </p>
+                <p>
+                  Сумма: <span>{{(ord.total_amount + ord.shipping_amount) | number : '1.0-0' : 'ru'}} &#8381;</span>
+                </p>
+              </div>
+              <!-- <div class="order-prods" *ngIf="ord.order_products">
+                <div class="order-prods__item" *ngFor="let prod of ord.order_products">
+                  <img [src]="prod.primary_image">
+                </div>
+              </div> -->
+              <!-- <div class="order-btns">
+                <div class="btn" (click)="repeatOrder(ord)">Повторить</div>
+              </div> -->
+            </div>
+          </div>
+          <div class="catalog__pager" *ngIf="pages.length">
+            <div class="pager__btn pager__btn-back" (click)="changePage(curPage - 1)">
+              <mat-icon svgIcon="shape"></mat-icon>
+            </div>
+            <div class="pager__pages">
+              <span class="pager__page" *ngFor="let page of pages" (click)="changePage(page - 1)" [ngClass]="{'active' : page == (curPage + 1)}">{{page}}</span>
+            </div>
+            <div class="pager__btn pager__btn-forward" (click)="changePage(curPage + 1)">
+              <mat-icon svgIcon="shape"></mat-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="account__content" *ngIf="(activeTab == 'partners')" @animateToggle>
+    <div class="account__info">
+      <div class="account__block account__block-orders" *ngIf="refOrders">
+        <div class="caption">
+          <div class="caption-icon">
+            <mat-icon svgIcon="shopCart"></mat-icon>
+          </div>
+          <div class="caption-text">История заказов рефералов (всего: {{refOrders.length}})</div>
+          <div class="caption-sum">Общая прибыль: <span>{{getRefSum() | number : '1.1-1' : 'ru'}} &#8381;</span></div>
+        </div>
+        <div class="content content__orders">
+          <table class="orders">
+            <thead>
+              <tr>
+                <th>Номер заказа</th>
+                <th>
+                  Дата и время заказа
+                  <!-- <mat-icon svgIcon="sortUp" (click)="sort(refOrders, 'created','up')"></mat-icon>
+                  <mat-icon svgIcon="sortDown" (click)="sort(refOrders, 'created', 'down')"></mat-icon> -->
+                </th>
+                <th>Статус</th>
+                <th>Процент</th>
+                <th>Сумма, &#8381;</th>
+                <th>Прибыль, &#8381;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of refOrders">
+                <td style="text-align: left;">{{order.order_no}} <span *ngIf="order.referral">({{getRefName(order)}})</span></td>
+                <td>{{order.created | dateFormat}}</td>
+                <td>
+                  <mat-icon svgIcon="greenCheck" *ngIf="order.payed"></mat-icon>                    
+                  <mat-icon svgIcon="redCross" *ngIf="!order.payed"></mat-icon>
+                  {{(order.payed)? 'Оплачен' : 'Не оплачен'}}
+                </td>
+                <td>{{refDiscount}}%</td>
+                <td>{{order.total_amount | number : '1.0-0' : 'ru'}} &#8381;</td>
+                <td>{{((order.total_amount * refDiscount) / 100) | number : '1.2-2': 'ru'}} &#8381;</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="account__block-orders--mobile">
+            <div class="order-item" *ngFor="let ord of refOrders">
+              <div class="order-caption">
+                Номер заказа: <span>{{ord.order_no}}</span>
+              </div>
+              <div class="order-info">
+                <p>
+                  Статус: 
+                  <mat-icon svgIcon="greenCheck" *ngIf="ord.payed"></mat-icon>                    
+                  <mat-icon svgIcon="redCross" *ngIf="!ord.payed"></mat-icon>                      
+                  <span>{{(ord.payed)? 'Оплачен' : 'Не оплачен'}}</span>
+                </p>
+                <p>
+                  Дата заказа: <span>{{ord.created | dateFormat}}</span>
+                </p>
+                <p>
+                  Сумма: <span>{{ord.total_amount | number : '1.0-0' : 'ru'}} &#8381;</span>
+                </p>
+                <p>
+                  Процент: <span>{{refDiscount}}%</span>
+                </p>
+                <div class="order-bonus">
+                  <p>Прибыль:</p>
+                  {{((ord.total_amount * refDiscount) / 100) | number : '1.2-2' : 'ru'}} &#8381;
+                </div>
+              </div>
+              <!-- <div class="order-prods" *ngIf="ord.order_products">
+                <div class="order-prods__item" *ngFor="let prod of ord.order_products">
+                  <img [src]="getProdImage(prod.product_id)">
+                </div>
+              </div> -->
+            </div>
+          </div>
+          <div class="catalog__pager" *ngIf="pagesRef.length">
+            <div class="pager__btn pager__btn-back" (click)="changePageRef(curPageRef - 1)">
+              <mat-icon svgIcon="shape"></mat-icon>
+            </div>
+            <div class="pager__pages">
+              <span class="pager__page" *ngFor="let page of pagesRef" (click)="changePageRef(page - 1)" [ngClass]="{'active' : page == (curPageRef + 1)}">{{page}}</span>
+            </div>
+            <div class="pager__btn pager__btn-forward" (click)="changePageRef(curPageRef + 1)">
+              <mat-icon svgIcon="shape"></mat-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="account__content" *ngIf="(activeTab == 'profile')" @animateToggle>
+    <div class="account__info">
+      <div class="account__block">
+        <div class="caption">
+          <div class="caption-icon">
+            <mat-icon svgIcon="profile"></mat-icon>
+          </div>
+          <div class="caption-text">Личные данные</div>
+        </div>
+        <div class="content profile profile-col">
+          <div class="content__row" [ngClass]="{'disable' : !editMode}">
+            <div class="username">
+              <div class="label">Имя Фамилия</div>
+              <div class="name">
+                <input type="text" [(ngModel)]="fullName">
+              </div>                  
+            </div>
+            <div class="usermail">
+              <div class="label">E-mail</div>
+              <div class="name">
+                <input type="email" [(ngModel)]="user.email">
+              </div>                   
+            </div>               
+          </div>
+
+          <div class="content__row" [ngClass]="{'disable' : !editMode}">
+            <div class="userphone">
+              <div class="label">Телефон</div>
+              <div class="name">
+                <input type="text" [(ngModel)]="user.phone" phoneMask>
+              </div>
+            </div>
+            <div class="userdate">
+              <div class="label">Дата рождения</div>
+              <div class="name">
+                <input 
+                  [matDatepicker]="myDatepicker"
+                  [(ngModel)]="birthdate"
+                  (click)="myDatepicker.open()"
+                  autocomplete="off"
+                  [disabled]="!editMode"
+                  readonly />
+                <mat-datepicker #myDatepicker></mat-datepicker>
+                <mat-datepicker-toggle [for]="myDatepicker" *ngIf="editMode"></mat-datepicker-toggle>
+                <!-- <input type="date"> -->
+              </div>
+            </div>
+          </div>
+          <div class="btns" style="justify-content: flex-end;">
+            <div class="btn" (click)="changeProfile()">{{(editMode)? 'Сохранить' : 'Редактировать'}}</div>
+          </div>              
+        </div>
+      </div>
+
+      <!-- <div class="account__block">
+        <div class="caption">
+          <div class="caption-icon">
+            <mat-icon svgIcon="shield"></mat-icon>
+          </div>
+          <div class="caption-text">Мой пароль</div>
+        </div>
+        <div class="content profile profile-col">
+          <div class="label" [ngClass]="{'disable' : !editPasMode}">Новый пароль</div>
+          <div class="name" [ngClass]="{'disable' : !editPasMode}">
+            <input type="password" [(ngModel)]="newPass">
+          </div>
+          <div class="label" [ngClass]="{'disable' : !editPasMode}">Повторите пароль</div>
+          <div class="name" [ngClass]="{'disable' : !editPasMode}">
+            <input type="password" [(ngModel)]="newPass2">
+          </div>
+          <div class="btns">
+            <div class="btn" (click)="changePass()">{{(editPasMode)? 'Сохранить' : 'Изменить пароль'}}</div>
+          </div>
+        </div>
+      </div> -->
+
+      <div class="account__block">
+        <div class="caption">
+          <div class="caption-icon">
+            <mat-icon svgIcon="point"></mat-icon>
+          </div>
+          <div class="caption-text">Мои адреса</div>
+        </div>
+        <div class="content content__address">
+          <span *ngIf="!user.addresses.length">Пока у Вас нет адресов</span>
+          <div class="content__address-list" *ngIf="user.addresses.length">
+            <div class="content__address-item" *ngFor="let adr of user.addresses">
+              {{userAddress(adr)}}
+            </div>
+          </div>
+          <div class="btns" style="margin-top: 40px;">
+            <div class="btn" (click)="addAddress()">Добавить адрес</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="account__block">
+        <div class="caption">
+          <div class="caption-icon">
+            <mat-icon svgIcon="notification"></mat-icon>
+          </div>
+          <div class="caption-text">Уведомления</div>
+        </div>
+        <div class="content profile">
+          <div class="notification">
+            <div class="check" [ngClass]="{'active': smsNotice}" (click)="changeNotice(smsNotice, 'sms')"></div>
+            <div class="notice">
+              Получать актуальную информацию об акциях и новых товарах по SMS
+            </div>            
+          </div>
+          <div class="notification">
+            <div class="check" [ngClass]="{'active': emailNotice}" (click)="changeNotice(emailNotice, 'email')"></div>
+            <div class="notice">
+              Получать актуальную информацию об акциях и новых товарах по e-mail
+            </div>            
+          </div>
+        </div>
+      </div> -->
+    </div>
+  </div>
+
+  <div class="account__content" *ngIf="(activeTab == 'referals')" @animateToggle>
+    <div class="account__info">
+      <div class="account__block account__block-orders" *ngIf="referalList">
+        <div class="caption">
+          <div class="caption-icon">
+            <mat-icon svgIcon="profile"></mat-icon>
+          </div>
+          <div class="caption-text">Мои рефералы</div>
+        </div>
+        <div class="content content__orders">
+          <table class="orders">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>ФИО</th>
+                <th>Дата регистрации</th>
+                <!-- <th>Телефон</th> -->
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ref of referalList">
+                <td style="text-align: left;">{{ref.referral.ref_id}}</td>
+                <td>{{getRefFullname(ref.referral)}}</td>
+                <td>{{ref.created | dateFormat}}</td>
+                <!-- <td>{{formatPhone(ref.referral.phone)}}</td> -->
+              </tr>
+            </tbody>
+          </table>
+          <div class="catalog__pager" *ngIf="pagesReflist.length">
+            <div class="pager__btn pager__btn-back" (click)="changePageReflist(curPageReflist - 1)">
+              <mat-icon svgIcon="shape"></mat-icon>
+            </div>
+            <div class="pager__pages">
+              <span class="pager__page" *ngFor="let page of pagesReflist" (click)="changePageReflist(page - 1)" [ngClass]="{'active' : page == (curPageReflist + 1)}">{{page}}</span>
+            </div>
+            <div class="pager__btn pager__btn-forward" (click)="changePageRef(curPageRefist + 1)">
+              <mat-icon svgIcon="shape"></mat-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div class="account__promo"> -->
+    <div class="programs__item programs__business" *ngIf="!isPartner">
+      <div class="programs__link" (click)="openPage('info/partners')">
+        Подробнее
+      </div>
+    </div>
+    <!-- <div class="account__promo-caption">
+      СТАНЬ ПРЕДСТАВИТЕЛЕМ Dari cosmetics
+    </div>
+    <div class="account__promo-text">
+      Выгодные партнерские условия для представителей компании
+    </div> 
+  </div>-->
+  <div class="mobile-btns">
+    <div class="btn" (click)="logout()">
+      Выйти
+      <mat-icon svgIcon="shape"></mat-icon>
+    </div>
+  </div>
+
+</div>

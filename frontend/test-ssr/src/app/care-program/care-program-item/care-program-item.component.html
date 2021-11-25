@@ -1,0 +1,272 @@
+<div class="program-item" *ngIf="programData">
+  <breadcrumbs [list]="[{text: 'Главная', link: '/'}, {text: 'Программы', link: '/care-program'}, {text: 'Программа ухода ' + programData.name, link: null}]"></breadcrumbs>
+  <div class="program-caption" *ngIf="programData">
+    <div class="time">
+      <mat-icon svgIcon="watch"></mat-icon>
+      <span>Время: {{programData.usage_period}}</span>      
+    </div>
+    <div class="program-caption__info" [style.backgroundImage]="getBkgImg()">
+      <div class="caption">
+        Программа ухода "{{programData.name}}"
+        <div class="sub">
+          {{programData.description}}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="program-info">
+    <div class="preferences preferences-item">
+      <div class="preference preference-{{k}}" *ngFor="let pref of preferences; let k = index;">
+        <span class="num"><mat-icon svgIcon="checkBold"></mat-icon>{{pref.seq_no}}</span>
+        <p class="description">{{pref.description}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="program-info info" style="border: none">
+    <div class="info__item problem">
+      <div class="icon">
+        <mat-icon svgIcon="problem"></mat-icon>
+      </div>
+      <div class="inner">
+        <p class="caption">
+          Проблема
+        </p>
+        <p class="value">
+          {{programData.problem}}
+        </p>           
+      </div>       
+    </div>
+    <div class="info__item">
+      <div class="icon">
+        <mat-icon svgIcon="target"></mat-icon>
+      </div>
+      <div class="inner">
+        <p class="caption">
+          Цель
+        </p>
+        <p class="value">
+          {{programData.target}}
+        </p>           
+      </div>       
+    </div>
+    <div class="info__item leaf">
+      <div class="icon">
+        <mat-icon svgIcon="leaf"></mat-icon>
+      </div>
+      <div class="inner">
+        <p class="caption">
+          Формула
+        </p>
+        <p class="value">
+          {{programData.formula}}
+        </p>            
+      </div>
+    </div>
+    <div class="info__item spa">
+      <div class="icon">
+        <mat-icon svgIcon="spa"></mat-icon>
+      </div>
+      <div class="inner">
+        <p class="caption">
+          Преимущества
+        </p>
+        <p class="value">
+          {{programData.preference}}
+        </p>              
+      </div>
+    </div>
+  </div>
+  <div class="program-info program-price">
+    <div class="text">Стоимость программы</div>
+    <div class="program-adv">
+      <div class="prod-price" *ngIf="(getProductsSum() > programData.price)">{{getProductsSum()}}&#8381;</div>  
+      <div class="kit-price">{{programData.price}}&#8381;</div>
+    </div>
+  </div>
+  <div class="btns">
+    <div class="btn" (click)="buyProgram()">
+      Уже хочу!
+    </div>
+  </div>
+  <div class="common-caption common-caption__program">
+    <h3>
+      Состав программы
+    </h3>
+    <hr>
+  </div>
+  <div class="program-products">
+    <div class="program-products__item" *ngFor="let product of products; let odd = odd" [ngClass]="{'odd': odd}">
+      <div class="image">
+        <img [src]="getThumbImg(product)">
+        <div class="count">{{product.products_count}} шт</div>
+      </div>
+      <div class="product-info">
+        <div class="name">{{product.product_name}}</div>
+        <div class="kit">{{programData.name}}</div>
+      </div>
+    </div>
+  </div>
+  <div class="program-price">
+    <div class="text">Стоимость программы</div>
+    <div class="program-adv">
+      <div class="prod-price" *ngIf="(getProductsSum() > programData.price)">{{getProductsSum()}}&#8381;</div>  
+      <div class="kit-price">{{programData.price}}&#8381;</div>          
+    </div>
+  </div>
+  <div class="btns btns__program">
+    <div class="btn btn__program" (click)="buyProgram()">
+      Купить программу
+      <div class="product__animate" [@animateCart]="btnState"></div>
+    </div>    
+  </div>
+  <div class="stages">
+    <div class="stages__tabs">
+      <div class="stages__tabs-item" *ngFor="let tab of stagesTabs" (click)="changeTab(tab)" [ngClass]="(activeTab == tab)? 'active' : ''">{{tab}}</div>
+    </div>
+    <div class="stages__content">
+      <div class="stages__inner" (click)="hideAllPopups()">
+        <div class="stages__period morning">
+          <mat-icon svgIcon="sunrize"></mat-icon>
+          Утро
+        </div>
+        <div class="stages__item stage" *ngFor="let step of (formattedStages[activeTab]['Утро'] | sortSteps : 'seq_no'); let last = last">        
+          <div class="stage__steps">
+            <div class="step">
+              <div class="step__caption">
+                Шаг {{step.seq_no}}
+              </div>
+              <div class="step__content" [ngClass]="(last)? 'last' : ''">
+                {{step.description}} 
+                <span (mouseenter)="step.hover = true" 
+                      (mouseleave)="step.hover = false" 
+                      (click)="openProduct(step.product_link)"
+                      (blur)="step.hover = false"
+                      class="step__link" 
+                      [ngClass]="(step.hover)? 'active': ''" >
+                  {{step.link_text}}
+                  <div class="link__prod" *ngIf="products.length">
+                    <div class="image">
+                      <img [src]="getProductData(step.product_link, 'primary_image')">
+                    </div>
+                    <div class="caption">{{getProductData(step.product_link, 'product_name')}}</div>
+                    <div class="sub">{{programData.name}}</div>
+                    <div class="price">{{getProductData(step.product_link, 'price')}} &#8381;</div>
+                    <div class="btn" (click)="openProduct(step.product_link)">Подробнее</div>
+                  </div>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stages__inner" (click)="hideAllPopups()">
+        <div class="stages__period evening">
+          <mat-icon svgIcon="moon"></mat-icon>
+          Вечер
+        </div>
+        <div class="stages__item stage" *ngFor="let step of (formattedStages[activeTab]['Вечер'] | sortSteps : 'seq_no'); let last = last">
+          <div class="stage__steps">
+            <div class="step">
+              <div class="step__caption">
+                Шаг {{step.seq_no}}
+              </div>
+              <div class="step__content" [ngClass]="(last)? 'last' : ''">
+                {{step.description}} 
+                <span (mouseenter)="step.hover = true" 
+                      (mouseleave)="step.hover = false" 
+                      (click)="openProduct(step.product_link)" 
+                      (blur)="step.hover = false"
+                      class="step__link" 
+                      [ngClass]="(step.hover)? 'active': ''" >
+                  {{step.link_text}}
+                  <div class="link__prod evening" *ngIf="products.length">
+                    <div class="image">
+                      <img [src]="getProductData(step.product_link, 'primary_image')">
+                    </div>
+                    <div class="caption">{{getProductData(step.product_link, 'product_name')}}</div>
+                    <div class="sub">{{programData.name}}</div>
+                    <div class="price">{{getProductData(step.product_link, 'price')}} &#8381;</div>
+                    <div class="btn" (click)="openProduct(step.product_link)">Подробнее</div>
+                  </div>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>        
+      </div>
+    </div>
+  </div>
+
+  <div class="program-price">
+    <div class="text">Стоимость программы</div>
+    <div class="program-adv">
+      <div class="prod-price" *ngIf="(getProductsSum() > programData.price)">{{getProductsSum()}}&#8381;</div>  
+      <div class="kit-price">{{programData.price}}&#8381;</div>          
+    </div>
+  </div>
+  <div class="btns btns__program">
+    <div class="btn btn__program" (click)="buyProgram()">
+      Купить программу
+      <div class="product__animate" [@animateCart]="btnState"></div>
+    </div>    
+  </div>
+  <div class="common-caption" *ngIf="programData.advices">
+    <h3>
+      Рекомендации
+    </h3>
+    <hr>
+  </div>
+
+  <div class="program__advices" *ngIf="programData.advices">
+    <div class="advice" *ngFor="let advice of programData.advices; let i = index" [ngClass]="{'last': isLastMiddle(i)}">
+      <div class="icon">
+        <img [src]="advice.image">
+      </div>
+      <div class="caption">{{advice.header}}</div>
+      <div class="description">{{advice.description}} <span *ngIf="advice.link_text" (click)="openProgram(advice)">{{advice.link_text}}</span></div>
+    </div>
+  </div>
+
+  <div class="program-price">
+    <div class="text">Стоимость программы</div>
+    <div class="program-adv">
+      <div class="prod-price" *ngIf="(getProductsSum() > programData.price)">{{getProductsSum()}}&#8381;</div>  
+      <div class="kit-price">{{programData.price}}&#8381;</div>          
+    </div>
+  </div>
+  <div class="btns btns__program">
+    <div class="btn btn__program" (click)="buyProgram()">
+      Купить программу
+    </div>    
+  </div>
+
+  <div class="common-caption" *ngIf="arrayFeedback.length">
+    <h3>
+      Отзывы
+    </h3>
+    <hr>
+  </div>
+
+  <div class="comments comments__product">
+      <div class="comments__item comments__item-product" *ngFor="let fb of arrayFeedback">
+          <img [src]="getCommentImg(fb)">
+          <div class="comments__item-content">
+          <p class="comments__item-caption">{{getUserName(fb) | initials}}</p>
+          <!-- <p class="comments__item-subcaption">@{{fb.user.username}}</p> -->
+          <div class="comments__item-text">
+              {{getFBText(fb.text)}}
+              <div class="comments__item-link" (click)="openComment(fb)">подробнее</div>
+              <div class="videolink" *ngIf="fb.video_link" (click)="openVideo(fb.video_link)">Видеоотзыв</div>
+          </div>
+          </div>        
+      </div>
+  </div>
+  <div class="comments" *ngIf="!userLogged">Оставлять отзывы могут только авторизованные пользователи</div>
+
+  <div class="btns btns__program">
+    <div class="btn btn__program" *ngIf="userLogged" (click)="sendAdvice()" style="margin-bottom: 20px;">
+      Оставить отзыв      
+    </div>    
+  </div>
+</div>

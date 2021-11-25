@@ -1,0 +1,193 @@
+<!-- Содержимое-->
+<div class="productInfo" itemscope itemtype="http://schema.org/Product">
+    <breadcrumbs [list]="bClist"></breadcrumbs>
+    <div class="productInfo__content" *ngIf="product">
+
+        <div class="productInfo__content-left">
+            <div class="badge" *ngIf="product.hit">ХИТ</div>
+            <div class="badge badge__new" *ngIf="product.new">NEW</div>
+            <img [src]="getProductImage()" (click)="openImg(product.primary_image)">
+        </div>
+        <div class="productInfo__content-right">
+            <h1 class="caption" itemprop="name">{{product.name}}</h1>
+            <div class="rate">
+                <span *ngFor="let r of rating;" class="rating__star">
+                    <mat-icon svgIcon="starFill" *ngIf="product.rating >= r"></mat-icon>
+                    <mat-icon svgIcon="star" *ngIf="r > product.rating"></mat-icon>
+                </span>  
+                <div class="comments" (click)="showAdvices()">Отзывы (<span>{{(comments.count) ? comments.count : '0'}}</span>)</div>
+            </div>
+            <div class="price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                <div class="price__value" itemprop="price">{{product.price}} &#8381;</div>
+                <meta itemprop="priceCurrency" content="RUB">
+                <div class="price__quantity">
+                    <div class="price__quantity price__quantity-change">
+                        <div class="less" (click)="changeQuantity('less')">-</div>
+                        <input type="text" [ngModel]="productQuantity" readonly>
+                        <div class="more" (click)="changeQuantity('more')">+</div>                        
+                    </div>
+                    <div class="btn" (click)="addToCart()" style="position: relative;">
+                        Купить
+                        <div class="product__animate"></div>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="weight">
+                <div class="weight__value">{{product.weight}} г</div>
+                <div class="weight__art">
+                    <p>Артикул: {{product.code}}</p>
+                    <p class="green">&#10004; Есть в наличии</p>
+                </div>
+            </div>
+            
+            <div class="care-programs" *ngIf="product.kits.length">
+                <div class="care-programs__item" *ngFor="let kit of product.kits">
+                    <span>Входит в программу "{{kit.kit_name}}"</span>
+                    <div class="care-programs__arrow" (click)="openPage('care-program/' + kit.kit_id)">
+                        <mat-icon svgIcon="shape"></mat-icon>
+                    </div>                    
+                </div>
+            </div>
+            <!-- <div class="description" [innerHTML]="product.short_description"></div> -->
+        </div>
+    </div>
+    <div class="common-caption">
+        <h3 style="padding-bottom: 26px;">
+            О продукте
+        </h3>
+        <hr>
+    </div>
+    <div class="productInfo__descr">
+        <div class="stages__tabs product-tabs">
+            <div class="stages__tabs-item stages__tabs-item--dscr" (click)="changeTab('description')" [ngClass]="{'active': activeTab == 'description'}">Описание</div>
+            <div class="stages__tabs-item" (click)="changeTab('result')" [ngClass]="{'active': activeTab == 'result'}">Результат</div>
+            <div class="stages__tabs-item" (click)="changeTab('usage')" [ngClass]="{'active': activeTab == 'usage'}">Применение</div>
+            <div class="stages__tabs-item" (click)="changeTab('certificate')" [ngClass]="{'active': activeTab == 'certificate'}" *ngIf="product.certificate">Сертификат</div>
+        </div>
+        <div class="productInfo__description" *ngIf="activeTab == 'description'" @animateToggle [innerHTML]="product.description" itemprop="description"></div>
+        <div class="productInfo__description" *ngIf="activeTab == 'result'" @animateToggle [innerHTML]="product.result"></div>
+        <div class="productInfo__description" *ngIf="activeTab == 'usage'" @animateToggle [innerHTML]="product.usage"></div> 
+        <div class="productInfo__description" *ngIf="activeTab == 'certificate'" @animateToggle>
+            <img data-src="{{product.certificate}}" (click)="openImg(product.certificate)" class="lazyload">
+        </div>
+    </div>
+    <div class="productInfo__active-components" *ngIf="activeComponents.length">
+        <div class="common-caption">
+            <h3>
+                Активные компоненты
+            </h3>
+            <hr>
+        </div>
+        <div class="comments__list">
+            <mat-icon svgIcon="back" class="slider-arrow" (click)="moveSlider('left')"></mat-icon>
+           <!--  <div>-->
+            <perfect-scrollbar class="comments__content"> 
+                <div class="comments__item" *ngFor="let item of activeComponents; let odd = odd;" [ngClass]="{'odd': odd}">
+                    <img data-src="{{getActiveComponentImg(item)}}" class="lazyload">
+                    <div class="tooltip" [matTooltip]="getTooltipText(item)" matTooltipPosition="below" matTooltipClass="tooltip-component">
+                        <div class="tooltip-icon">+</div>
+                    </div>
+                    <div class="comments__item-content active-component">
+                        <div class="caption">{{item.name}}</div>
+                        <div class="text" [innerHTML]="getActiveComponentText(item)"></div>
+                        <div class="link" (click)="openPage('catalog/ingredient/' + item.component_id)">Подробнее <mat-icon svgIcon="shapeR"></mat-icon></div>
+                    </div>        
+                </div>
+            </perfect-scrollbar>
+            <!-- </div> -->
+            <mat-icon svgIcon="forward" class="slider-arrow" (click)="moveSlider('right')"></mat-icon>
+        </div>
+    </div>
+    <div class="common-caption" *ngIf="comments.count" #blockComments>
+        <h3>
+            Отзывы
+        </h3>
+        <hr>
+    </div>
+    
+    <slider [sliderConfig]="commentsSliderConfig" *ngIf="isBrowser && comments.results && comments.results.length"></slider>
+    
+    <!-- <div class="comments comments__product">
+        <div class="comments__item comments__item-product" *ngFor="let item of comments.results">
+            <img data-src="{{getCommentImg(item)}}" class="lazyload">
+            <div class="comments__item-content">
+            <p class="comments__item-caption">{{getUserName(item) | initials}}</p>
+            <div class="comments__item-text">
+                {{getCommentText(item.text)}}
+                <div class="comments__item-link" (click)="openComment(item)">подробнее</div>
+                <div class="videolink" *ngIf="item.video_link" (click)="openVideo(item.video_link)">Видео-отзыв</div>
+            </div>
+            </div>        
+        </div>
+    </div> -->
+    <!-- <div class="btns" *ngIf="userLogged">
+        <div class="btn btn__comment" (click)="sendAdvice()">Оставить отзыв</div>
+    </div>
+    <div class="comments" *ngIf="!userLogged">Оставлять отзывы могут только авторизованные пользователи</div> -->
+
+    <div class="common-caption">
+        <h3>
+           Для максимального эффекта
+        </h3>
+        <hr>
+    </div>
+
+    <div class="relative">
+        <div class="switch">
+            <div class="switch__item" [ngClass]="(relativeType)? 'active' : ''" (click)="relativeType = true;">
+                Рекомендуем
+                <div class="switch__item-bkg" [ngClass]="(!relativeType)? 'active' : ''"></div>
+            </div>
+            <div class="switch__item" [ngClass]="(!relativeType)? 'active' : ''" (click)="relativeType = false;">
+                Вы смотрели
+            </div>
+        </div>
+        <div class="relative__content" *ngIf="relativeProducts.length && relativeType && !relativeEvents.length">
+            <div class="relative__item" *ngFor="let relProd of relativeProducts; let last = last" [ngClass]="{'last': last}">
+                <div class="relative__item-check" [ngClass]="{'active': relProd.check}" (click)="toggleCheck($event, relProd)"></div>
+                <div class="badge" *ngIf="relProd.hit">ХИТ</div>
+                <div class="badge badge__new" *ngIf="relProd.new">NEW</div>
+                <div class="img">
+                    <img data-src="{{getThumbImg(relProd)}}" class="lazyload">
+                </div>
+                <div class="name">
+                    <h2><p>{{(relProd.product_name)? relProd.product_name : relProd.name}}</p></h2>
+                    <div class="sub">{{relProd.english_name}}</div>
+                    <div class="price">
+                        {{(relProd.price).toLocaleString('ru')}} &#8381;
+                    </div>                    
+                </div>
+                <div class="relative__item-plus" *ngIf="!last">+</div>
+                <div class="relative__item-plus" *ngIf="last" [ngClass]="{'last': last}">&#61;</div>
+            </div>
+            <div class="relative__sum">
+                <div class="relative__sum-value">{{getRelativeSum().toLocaleString('ru')}} &#8381;</div>
+                <div class="btn" (click)="buyRelative()" [ngClass]="{'disable': !getRelativeSum()}">Купить</div>
+            </div>
+        </div>
+        <div class="promo__content" *ngIf="relativeType && relativeEvents.length">
+            <div class="promo__list">
+                <promo-event *ngFor="let ev of relativeEvents" [promoEvent]="ev.event" class="promo__item promo__item-product width-{{getPromoWidth(ev.event)}}" 
+                    [ngClass]="{'promo__item-2': !ev.event.half_screen, 
+                    'promo__item-1': ev.event.half_screen}"></promo-event>
+            </div>
+        </div>
+        <div class="relative__content relative__content-seen" *ngIf="seenProducts.length && !relativeType">
+            <div class="relative__item" *ngFor="let relProd of seenProducts">
+                <div class="badge" *ngIf="relProd.hit">ХИТ</div>
+                <div class="badge badge__new" *ngIf="relProd.new">NEW</div>
+                <div class="img">
+                    <img data-src="{{getThumbImg(relProd)}}" class="lazyload">
+                </div>
+                <div class="name">
+                    <p>{{relProd.product_name}}</p>
+                    <div class="sub">{{relProd.english_name}}</div>
+                    <div class="price">
+                        {{(relProd.price).toLocaleString('ru')}} &#8381;
+                    </div>                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

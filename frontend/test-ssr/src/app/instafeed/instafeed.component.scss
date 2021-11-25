@@ -1,0 +1,28 @@
+.instafeed {
+    display: flex;
+    height: 220px;
+    overflow-y: hidden;
+    overflow-x: auto;
+
+    &__item {
+        height: 100%;
+        width: 220px;
+        border-radius: 5px;
+        position: relative;
+        margin-right: 10px;
+        cursor: pointer;
+
+        .mat-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+        }
+
+        img {
+            border-radius: 5px;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+}

@@ -1,0 +1,59 @@
+<div class="top-panel">
+  <div class="top-panel__inner">
+    <div class="top-panel__menu">
+      <ul>
+        <li>
+          <a routerLink="/info/about" class="link">О&nbsp;нас</a>
+          <a routerLink="/info/partners" class="link">Сотрудничество</a>
+          <a routerLink="/info/contacts" class="link">Контакты</a>
+        </li>
+        <li class="central-block">
+          <a routerLink="/info/shipping" class="link"><mat-icon svgIcon="shipping"></mat-icon>Доставка</a>
+          <a routerLink="/info/paying" class="link"><mat-icon svgIcon="payCard"></mat-icon>Оплата</a>
+          <!-- <span><mat-icon svgIcon="info" style="width: 25px;"></mat-icon>Помощь&nbsp;24/7</span> -->
+          <span (click)="showShare = true" class="share-panel">
+            <mat-icon svgIcon="share" style="width: 25px;"></mat-icon>Поделиться
+            <div class="share-panel__inner" *ngIf="showShare" (mouseleave)="showShare = false">
+              <div class="share-panel__arrow"></div>
+              <div class="caption">
+                Поделитесь ссылкой с друзьями и получайте 5% от их покупок на свой счет
+              </div>
+              <div class="sub" (click)="openPopup()" *ngIf="!loggedIn">Войти в аккаунт</div>
+              <div class="social" *ngIf="loggedIn">
+                <div class="social__item share" *ngIf="user.total_amount > 2000">
+                  <div class="share__link">
+                    <div class="share__link-text">
+                      {{getShareLink()}}
+                    </div>
+                    <div class="share__link-icon" (click)="copyClipboard()">
+                      <mat-icon svgIcon="copy" class="copyIcon"></mat-icon>
+                    </div>                    
+                  </div>
+                </div>
+                <div class="social__item vk" (click)="share('vk')" *ngIf="user.total_amount > 2000">
+                  <mat-icon svgIcon="vk"></mat-icon>
+                </div>
+                <div class="social__item fb" (click)="share('fb')" *ngIf="user.total_amount > 2000">
+                  <mat-icon svgIcon="fb"></mat-icon>
+                </div>
+                <div class="social__item ok" (click)="share('ok')" *ngIf="user.total_amount > 2000">
+                  <mat-icon svgIcon="ok"></mat-icon>
+                </div>
+                <div class="social__item twitter" (click)="share('twitter')" *ngIf="user.total_amount > 2000">
+                  <mat-icon svgIcon="twitter"></mat-icon>
+                </div>
+                <div class="social__item text" *ngIf="user.total_amount <= 2000">
+                  Реферальная ссылка становится доступной, когда общая сумма заказов превысит 2000&#8381;
+                </div>
+              </div>
+            </div>
+          </span>
+        </li>
+        <li>
+          <span><a href="tel:88007008858">8 (800) 700-88-58</a></span>
+          <span class="link" (click)="openPopup('consult')">Заказать звонок</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+<mat-icon (click)="closePopup()" svgIcon="close" class="close-icon"></mat-icon>
+<div class="popup">
+  <h2>Войти в личный кабинет</h2>  
+  <form class="login-form">
+    <input type="text" matInput placeholder="Логин/e-mail" [(ngModel)]="username" name="username" >
+    <input type="password" matInput placeholder="Пароль" [(ngModel)]="password" name="password" (keydown.enter)="login()" >
+  </form>
+  <div class="forgot" (click)="signUp()">
+    Регистрация
+  </div>
+  <div class="btn btn__login" (click)="login()" [ngClass]="{'disable': !agree}">
+    Войти <mat-icon svgIcon="shape"></mat-icon>
+  </div>
+  <div class="error" *ngIf="showError">{{errorText}}</div>
+  <div class="forgot" style="margin-top: 20px;" (click)="forgot()">
+    Забыли пароль?
+  </div>
+  <hr>
+  <div class="social-login">
+    <p class="caption">Авторизоваться через соцсети</p>
+  </div>
+  <div class="social-links">
+    <div class="social-links__item vk" (click)="signIn('vk')" [ngClass]="{'disable': !agree}">
+      <mat-icon svgIcon="vk"></mat-icon>
+    </div>
+    <div class="social-links__item fb" (click)="signIn('fb')" [ngClass]="{'disable': !agree}">
+      <mat-icon svgIcon="fb"></mat-icon>
+    </div>    
+  </div>
+  <div class="agree">
+    <div class="check" (click)="agree = !agree" [ngClass]="(agree)? 'active' : ''"></div>
+    <div class="text" (click)="openDoc()">Согласен с условиями Публичной оферты</div>
+  </div>
+</div>

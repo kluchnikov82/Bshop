@@ -1,0 +1,139 @@
+.close-icon {
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    cursor: pointer;
+
+    @media (max-width: 480px) {
+        right: -25px;
+    }
+}
+
+.popup {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 88vh;
+
+    img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+
+    hr {
+        width: 100%;
+        margin: 0;
+    }
+
+    h2, .caption {
+        font-family: 'Montserrat Bold';
+        font-size: 20px;
+        color: #2b2c30;
+        margin-top: 0;
+
+        @media (max-width: 767px) {
+            font-size: 15px;
+        }
+    }
+
+    .adviceCaption {
+        font-family: 'Montserrat Medium';
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .rating {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+
+        &__caption {
+            font-family: 'Montserrat Medium';
+            font-size: 16px;
+            margin-right: 20px;            
+        }
+
+        &__star {
+            cursor: pointer;
+            margin-right: 8px;
+        }
+    }
+
+    .caption {
+        margin-top: 25px;
+
+        @media (max-width: 767px) {
+            margin-top: 10px;
+        }
+    }
+
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        font-family: 'Montserrat Medium';
+        font-size: 16px;
+        color: #656568;
+
+        @media (max-width: 767px) {
+            font-size: 13px;
+        }
+
+        textarea, input {
+            width: calc(100% - 40px);
+            padding: 20px;
+            font-family: 'Montserrat Medium';
+            font-size: 14px;
+            color: #656568;
+            outline: none;
+            border: 1px solid #c9c9c9;
+            border-radius: 5px;
+            background: transparent;
+            margin-bottom: 24px;
+
+            &::placeholder {
+                color: #c9c9c9;
+            }
+
+            @media (max-width: 767px) {
+                font-size: 12px;
+            }
+        }
+
+        input {
+            padding: 10px 20px;
+        }
+    }
+}
+
+.messengers {
+    display: flex;
+    align-items: center;
+
+    &__icon {
+        margin: 0 5px;
+
+        .mat-icon {
+            fill: hsl(217, 7%, 58%);
+        }
+    
+        &:hover {
+    
+            .mat-icon {
+                fill: hsl(0, 100%, 77%);
+            }
+        }
+    }
+}
+
+.history {
+    font-family: 'Montserrat Regular';
+    font-size: 14px;
+
+    &__item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+}

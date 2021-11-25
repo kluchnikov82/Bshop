@@ -1,0 +1,45 @@
+<div class="comments" *ngIf="sliderConfig">
+  <ng-container>
+    <div class="comments__content" #slider>
+      <div class="comments__list" >
+        <div class="comments__item" *ngFor="let comment of arraySlides" [ngClass]="{'comment__wtext': comment.text}">
+          <div class="comments__img">
+            <img data-src="https://dari-cosmetics.ru/{{comment.images[0].image}}" class="lazyload" *ngIf="sliderConfig.type == 'comments-main'">
+            <img data-src="{{comment.prod_feedback_images[0].image}}" class="lazyload" *ngIf="sliderConfig.type == 'comments'">
+            <div class="comments__img-text" *ngIf="comment.with_text">
+              <div class="text-before">ДО</div>
+              <div class="text-after">ПОСЛЕ</div>
+            </div>
+          </div>
+          <div class="comments__text" *ngIf="comment.text" [innerHTML]="comment.text"></div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <div class="swiper-button-next" (click)="nextSlide()" *ngIf="activeView"></div>
+  <div class="swiper-button-prev" (click)="prevSlide()" *ngIf="activeView"></div>
+
+  <!-- <swiper [config]="swiperConfig" *ngIf="sliderConfig.type == 'comments'">
+    <div class="swiper-wrapper">
+      <ng-container *ngFor="let comment of arraySlides">
+        <div class="swiper-slide" *ngIf="comment.prod_feedback_images.length" [ngClass]="{'comment__wtext': comment.text}">
+          <div class="slider__img">
+            <img data-src="{{comment.prod_feedback_images[0].image}}" class="lazyload">
+            <div class="slider__img-text" *ngIf="comment.with_text">
+              <div class="text-before">ДО</div>
+              <div class="text-after">ПОСЛЕ</div>
+            </div>
+          </div>
+          <div class="slider__text" *ngIf="comment.text">{{comment.text}}</div>
+        </div>
+      </ng-container>
+    </div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+  </swiper> -->
+  <div class="comments__btns">
+    <div class="btn btn__all">
+      <a href="/comments">Все отзывы</a>
+    </div>
+  </div>
+</div>

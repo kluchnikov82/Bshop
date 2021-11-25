@@ -1,0 +1,87 @@
+<mat-icon (click)="closePopup()" svgIcon="close" class="close-icon"></mat-icon>
+<mat-dialog-content class="popup" *ngIf="data">
+  <div [ngSwitch]="data.type">
+    <div *ngSwitchCase="'consult'">
+      <h2>{{(data.partner)? 'Стать партнером' : 'Индивидуальная консультация'}}</h2>
+      <div class="consult__form-popup">
+        <input type="text" placeholder="Ваше имя" [(ngModel)]="username" required>
+        <input type="phone" placeholder="+7(900)123-45-67" [(ngModel)]="userphone" phoneMask required>
+        <input type="email" placeholder="E-mail" [(ngModel)]="useremail" *ngIf="data.partner">
+        <!-- <div class="messengers" *ngIf="!data.partner">
+          <span class="text">Или напишите нам:</span>
+          <a class="messengers__icon" href="https://vk.me/club43817012"><mat-icon svgIcon="vk_message"></mat-icon></a>
+          <a class="messengers__icon" href="https://wa.me/79033668260"><mat-icon svgIcon="whatsapp"></mat-icon></a>
+          <a class="messengers__icon" href="viber://chat?number=79033668260"><mat-icon svgIcon="viber"></mat-icon></a>
+        </div> -->
+        <div class="agree">
+          <div class="check" (click)="agree = !agree" [ngClass]="(agree)? 'active' : ''"></div>
+          <div class="text" (click)="openDoc()">Я даю свое согласие на обработку персональных данных</div>
+        </div>
+        <div class="btn btn__login" [ngClass]="{'disable': !agree || !username || !userphone }" (click)="send()">{{(data.partner)? 'Подать заявку' : 'Отправить'}}</div>
+      </div>
+    </div>
+    <div *ngSwitchCase="'forgot'">
+      <h2>Укажите свой e-mail для изменения пароля</h2>
+      <div class="consult__form-popup">
+        <input type="email" placeholder="Введите E-mail" [(ngModel)]="useremail">
+        <div class="btn btn__login" (click)="changePass()">
+          Изменить<mat-icon svgIcon="shape"></mat-icon>
+        </div>
+      </div>
+    </div>
+    <div *ngSwitchCase="'comment'">
+      <h2>Отзыв нашего покупателя</h2>
+      <div class="comment__popup">
+        <div class="comment__popup-caption">
+          <div class="img">
+            <img [src]="data.comment.user.avatar || 'https://dari-cosmetics.ru/assets/otzyvy.jpg'">
+          </div>
+          <div class="username">{{getUserName(data.comment) | initials}}</div>
+        </div>
+        <div class="text">{{data.comment.text}}</div>
+      </div>
+    </div>
+    <div *ngSwitchCase="'image'">
+      <img [src]="data.link">
+    </div>
+    <div *ngSwitchDefault>
+      <h2>Оставить отзыв</h2>
+      <div class="adviceCaption">
+        <span *ngIf="data.type == 'kit'">Отзыв о программе: </span>
+        <span *ngIf="data.type == 'product'">Отзыв о товаре: </span>
+        <span>{{subjectName}}</span>
+      </div>
+      <div class="rating">
+        <span class="rating__caption">Ваша оценка</span>
+        <span *ngFor="let r of rating;" class="rating__star">
+          <mat-icon svgIcon="starFill" (click)="chooseRating(r)" *ngIf="curRate >= r"></mat-icon>
+          <mat-icon svgIcon="star" (click)="chooseRating(r)" *ngIf="r > curRate"></mat-icon>
+        </span>      
+      </div>
+      <form class="login-form">
+        <textarea name="adviceText" rows="10" placeholder="Текст отзыва" [(ngModel)]="adviceText" (input)="showError = false"></textarea>
+        <input type="url" name="adviceUrl" placeholder="Ссылка на видео" [(ngModel)]="adviceUrl" >
+      </form>
+    
+      <div class="btn btn__login" (click)="send()">
+        Отправить <mat-icon svgIcon="shape"></mat-icon>
+      </div>
+    </div>
+
+    <div *ngSwitchCase="'history'">
+      <h2>История движения бонусов</h2>
+      <div class="consult__form-popup">
+        <div class="history">
+          <div class="history__item" *ngFor="let bon of data.history">
+            <div class="history__item-date">{{bon.created | date : 'dd.MM.yyyy'}}</div>
+            <div class="history__item-value">{{bon.amount | number : '1.0-0' : 'ru'}} <span *ngIf="checkBonusActive(bon)">(активация - {{checkBonusActive(bon) | date : 'dd.MM.yyyy'}})</span></div>
+          </div>
+        </div>
+        <div class="btn btn__login" (click)="send()">Закрыть</div>
+      </div>
+    </div>
+
+  </div>
+  <div class="error" *ngIf="showError">{{errorText}}</div>
+
+</mat-dialog-content>

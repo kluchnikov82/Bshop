@@ -1,0 +1,33 @@
+deploy_prod:
+  stage: deploy
+  image: kroniak/ssh-client
+  environment: Production
+  script: 
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan 80.87.202.131 > ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/id_rsa
+    - ssh logshipping@80.87.202.131 'bash -s' < ./deploy.sh
+  only:
+    - master
+
+deploy_front_test:
+  stage: deploy
+  image: kroniak/ssh-client
+  environment: Production
+  script:
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan 80.87.202.131 > ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/id_rsa
+    - ssh logshipping@80.87.202.131 'bash -s' < ./deploy_front_test.sh
+  only:
+    - test-ssr

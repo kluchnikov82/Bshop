@@ -1,0 +1,23 @@
+<!-- Содержимое-->
+<div class="productInfo" *ngIf="data">
+  <breadcrumbs [list]="[{text: 'Главная', link: '/'}, {text: 'Активные компоненты', link: null}, {text: data.name, link: null}]"></breadcrumbs>
+  <div class="productInfo__content">
+      <div class="productInfo__content-left component">
+          <img [src]="data.image">
+          <div class="btn" (click)="openProduct()">
+            <mat-icon svgIcon="shape"></mat-icon>
+            Назад
+          </div>
+      </div>
+      <div class="productInfo__content-right">
+          <div class="caption">{{data.name}}</div>
+          <div class="description component" [innerHTML]="data.description"></div>
+          <div class="benefits" *ngIf="data.benefits">
+            <div class="benefits__caption">Любопытно</div>
+            <div class="benefits__item" *ngFor="let item of data.benefits">
+              {{item}}
+            </div>
+          </div>
+      </div>
+  </div>
+</div>

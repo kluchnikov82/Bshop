@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /account
+Disallow: /order
+Disallow: /admin
+
+Sitemap: https://dari-cosmetics.ru/sitemap.xml
